@@ -82,7 +82,7 @@ public class BankLogic {
 
     String welcomeMessage = "---Welcome to SeBanking Co.---\n";
 
-
+    System.out.println("Update");
     System.out.println(welcomeMessage);
     Customer customer1 = new Customer("Anna", "Andersson", 9913991);
     customer1.addAccount();
