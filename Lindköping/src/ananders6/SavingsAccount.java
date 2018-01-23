@@ -1,5 +1,7 @@
 package ananders6;
 
+
+
 public class SavingsAccount {
   
   private double balance = 0.0;
@@ -7,6 +9,7 @@ public class SavingsAccount {
   private String type;
   private int accountNumber;
   private static int lastAccountNumber = 1000;
+  
   
   public SavingsAccount() {
   
@@ -51,13 +54,14 @@ public class SavingsAccount {
   
   
   public void deleteAccount() {
-    
+  
   }
 }
   
 
 
-/* 1. Create new customer
+/* 
+ * 1. Create new customer
  *  1.1 Add account
  *   1.1.1 deposit
  *   1.1.2 withdraw
@@ -77,10 +81,6 @@ public class SavingsAccount {
  * 8. deposit
  * 9. withdraw
  * 10. close account
- * 
- * 
- * 
- * 
  */
 
 

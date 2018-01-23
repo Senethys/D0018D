@@ -1,30 +1,25 @@
 package ananders6;
-
 import java.util.ArrayList;
-import java.util.Scanner;
+
 
 public class Customer {
   
-  public static Scanner userInput = new Scanner(System.in);
-  String inputData;
-  
   private String name;
   private String lastname;
-  private long socialSecurityNumber;
+  private String ssn;
   private ArrayList<SavingsAccount> Accounts = new ArrayList();
   
-  public Customer(String fname, String lname, long sNumber) {
+  public Customer(String fname, String lname, String sNumber) {
     name = fname;
     lastname = lname;
-    socialSecurityNumber = sNumber;
+    ssn = sNumber;
   }
 
   public void changeName() {
     System.out.print("Current name: ");
     System.out.print(name + " " + lastname);
     System.out.println("What would you like to change the name to? >: ");
-    inputData = userInput.next();
-    name = inputData;
+
   }
   
   public void addAccount() {
@@ -34,18 +29,26 @@ public class Customer {
   
   }
   
-  public void getCustomerInfo() {
-    System.out.println("Customer information: ");
-    System.out.print("Current name: ");
-    System.out.println(name + " " + lastname);
-    System.out.print("Social Number: ");
-    System.out.println(socialSecurityNumber);
+  public void getCustomerAccountInfo() {
 
-    
   }
   
-  public void getCustomerAccountInfo() {
-    System.out.println("Account Number: ");
+  public String getpNo() {
+    return ssn;
+  }
+  
+  public String getCustomerName() {
+    return name;
+  }
+  
+  public String getCustLastane() {
+    return lastname;
+  }
+  
+  public String getCustomerInfo() {
+    String result;
+    result = name + ' ' + lastname + ' ' + ssn;
+    return result;
   }
 
 }
