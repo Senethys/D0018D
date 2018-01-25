@@ -13,7 +13,7 @@ public class SavingsAccount {
   
   public SavingsAccount() {
   
-    accountNumber = lastAccountNumber++;
+    this.accountNumber = lastAccountNumber++;
   }
   
   
@@ -26,24 +26,14 @@ public class SavingsAccount {
   }
   
   
- public void getAccountNumber() {
-    
-    System.out.print("Account Number: ");
-    System.out.println(accountNumber);
+ public int getAccountNumber() {
+   
+   return accountNumber;
 
   }
   
-  public void getAccountInfo() {
-    
-    System.out.print("Account Number: ");
-    System.out.println(accountNumber);
-    System.out.print("Type: ");
-    System.out.println(type);
-    System.out.print("Balance: ");
-    System.out.println(balance);
-    System.out.print("Rate: ");
-    System.out.println(interestRate);
-  
+  public String getAccountInfo() {
+    return accountNumber + ' ' + balance + ' ' + type + ' ' + interestRate;
   }
   
 
@@ -82,5 +72,3 @@ public class SavingsAccount {
  * 9. withdraw
  * 10. close account
  */
-
-

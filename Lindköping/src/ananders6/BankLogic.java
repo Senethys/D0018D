@@ -4,18 +4,50 @@ import java.util.ArrayList;
 
 
 public class BankLogic {
+  
+  
 
   private ArrayList<Customer> CustomerList = new ArrayList();
 
-  public BankLogic() {
+  
+  
+  public BankLogic() {}
+
+
+  //Returns customer object
+  private Customer matchCustomer(String pNo) {
+
+    String matchedpNo;
+    Customer MatchedCustomerObject = null;
+
+    for(int i = 0; i < CustomerList.size(); i++) {
+      matchedpNo = CustomerList.get(i).getpNo(); {
+        if(matchedpNo.equals(pNo)) {
+          MatchedCustomerObject = CustomerList.get(i);
+        }
+      }
+    }
+    return MatchedCustomerObject;
   }
 
-
-
+  
+  //RReturnerar en ArrayList<String> som innehåller en presentation av bankens alla kunder på följande sätt: 
+  //[Karl Karlsson 8505221898, Pelle Persson 6911258876, Lotta Larsson 7505121231]
+  
   public ArrayList<String> getAllCustomers() {
-    return null;
-
+   
+    ArrayList<String> results = new ArrayList();
+    String CustomerInfo;
+    
+    for(int i = 0; CustomerList.size() > i; i++) {
+      CustomerInfo = CustomerList.get(i).getCustomerInfo();
+      results.add(CustomerInfo);
+    }
+    return results;
   }
+  
+  
+  
 
   public boolean createCustomer(String name, String surname, String pNo) {
 
@@ -37,30 +69,19 @@ public class BankLogic {
   [Lotta Larsson 7505121231, 1004 0.0 Sparkonto 1.0, 1005 0.0 Sparkonto 1.0]
 
    */
+  
 
   public ArrayList<String> getCustomer(String pNo){
-    
+
     ArrayList<String> results = new ArrayList();
-    String getValue;
-    String accountInfo;
     String CustomerInfo;
     Customer MatchedCustomerObject;
     
-    for(int i = 0; i < CustomerList.size(); i++) {
-      getValue = CustomerList.get(i).getpNo(); {
-      if(getValue.equals(pNo)) {
-        MatchedCustomerObject = CustomerList.get(i);
-        CustomerInfo = MatchedCustomerObject.getCustomerInfo();
-        results.add(CustomerInfo);
-        //addAccount info
-        //Customer ska aldrig returnera listan med kontoobjekt 
-        //Kan returnera strängar.
-    
-        return null;
-        }
-      }
-    }
-    return null;
+    MatchedCustomerObject = matchCustomer(pNo);
+    CustomerInfo = MatchedCustomerObject.getCustomerInfo();
+    results.add(CustomerInfo);
+    results.addAll(MatchedCustomerObject.getAllCustomerAccountInfo());
+    return results;
   }
 
 
@@ -71,7 +92,17 @@ public class BankLogic {
    */
 
   public boolean changeCustomerName(String name, String surname, String pNo) {
-    return false;
+    Customer customer;
+    boolean result = true;
+    
+    try {
+      customer = matchCustomer(pNo);
+      customer.changeName(name, surname);
+    }
+    catch(IllegalStateException e) {
+      result = false;
+    }
+    return result;
 
   }
 
@@ -89,29 +120,44 @@ public class BankLogic {
 
   }
 
-  
+
   /**Skapar ett konto till kund med personnummer pNo
   Kontonummer ska vara unika för hela banken, inte bara för en enskild kund (se Big Java Late Objects på s. 400Preview the documentView in a new window för tips på lösning).
   Returnerar kontonumret som det skapade kontot fick
   Alternativt returneras –1 om inget konto skapades
-*/
+   */
   public int createSavingsAccount(String pNo) {
-    return 0;
-
+    Customer MatchedCustomerObject;
+    int accountNumber;
+    
+    try {
+      MatchedCustomerObject = matchCustomer(pNo);
+      accountNumber = MatchedCustomerObject.addAccount();
+    }
+    catch (IllegalStateException e) { 
+    return -1;
+    }
+  return accountNumber;  
   }
 
-/**
- * 
+
+  /**
+   * 
   Returnerar en String som innehåller presentation av kontot med kontonnummer accountId som tillhör kunden pNo (kontonummer saldo, kontotyp räntesats).
   Returnerar null om konto inte finns eller om det inte tillhör kunden
- */
+   */
   public String getAccount(String pNo, int accountId) {
-    return pNo;
+    String result;
+    Customer customer;
+    customer = matchCustomer(pNo);
+    result = customer.getCustomerAccountInfo(accountId);
+    
+    return result;
 
   }
   /**Gör en insättning på konto med kontonnummer accountId som tillhör kunden pNo.
   Returnerar true om det gick bra annars false
- */
+   */
 
   public boolean deposit(String pNo, int accountId, double amount) {
     return false;
@@ -127,13 +173,13 @@ public class BankLogic {
 
   }
 
-  
+
   /**Avslutar ett konto med kontonnummer accountId som tillhör kunden pNo. När man avslutar ett konto skall räntan beräknas som saldo*ränta/100.
   OBS! Enda gången ränta läggs på är när kontot tas bort eftersom årsskiften inte hanteras i denna version av systemet.
   Presentation av kontot ska returneras inklusive räntan man får på pengarna (kontonummer saldo, kontotyp räntesats, ränta)
   Returnerar null om inget konto togs bort
    */
-  
+
   public String closeAccount(String pNr, int accountId) {
     return pNr;
 
@@ -145,12 +191,13 @@ public class BankLogic {
     String welcomeMessage = "---Welcome to SeBanking Co.---\n";
 
     System.out.println(welcomeMessage);
-    
+
     BankLogic BankApp = new BankLogic();
     BankApp.createCustomer("Anna", "Andersson", "9913997654");
     Customer testCustomer = new Customer("TEstname", "surname", "9913997654");
     String test = testCustomer.getCustomerInfo();
-    
+
+
 
   }
 }
