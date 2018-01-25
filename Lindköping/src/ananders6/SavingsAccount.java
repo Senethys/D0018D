@@ -1,7 +1,6 @@
 package ananders6;
 
 
-
 public class SavingsAccount {
   
   private double balance = 0.0;
@@ -23,8 +22,12 @@ public class SavingsAccount {
   }
   
   public void withdraw(double amount) {
-    this.balance -= amount;
-    
+    if ((balance - amount) < 0) {
+      this.balance -= 0; 
+    }
+    else {
+      this.balance -= amount;
+    }
   }
   
   

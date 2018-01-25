@@ -87,8 +87,13 @@ public class Customer {
   
   public boolean deleteAccount(int accountId) {
     boolean result = false;
-    Accounts.remove(accountId);
-    result = true;
+    try {
+      Accounts.remove(accountId);
+      result = true;
+    } catch(IndexOutOfBoundsException e) {
+      result = false;
+    }
+
     return result;
   }
   

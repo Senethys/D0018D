@@ -4,13 +4,9 @@ import java.util.ArrayList;
 
 
 public class BankLogic {
-  
-  
 
   private ArrayList<Customer> CustomerList = new ArrayList();
 
-  
-  
   public BankLogic() {}
 
 
@@ -30,34 +26,43 @@ public class BankLogic {
     return MatchedCustomerObject;
   }
 
-  
+
   //RReturnerar en ArrayList<String> som innehåller en presentation av bankens alla kunder på följande sätt: 
   //[Karl Karlsson 8505221898, Pelle Persson 6911258876, Lotta Larsson 7505121231]
-  
+
   public ArrayList<String> getAllCustomers() {
-   
+
     ArrayList<String> results = new ArrayList();
     String CustomerInfo;
-    
+
     for(int i = 0; CustomerList.size() > i; i++) {
       CustomerInfo = CustomerList.get(i).getCustomerInfo();
       results.add(CustomerInfo);
     }
     return results;
   }
-  
-  
-  
+
+
+
 
   public boolean createCustomer(String name, String surname, String pNo) {
-
+    boolean result = false;
     try {
       Customer NewCustomer = new Customer(name, surname, pNo);
-      CustomerList.add(NewCustomer);
-    } catch (IllegalStateException e) { 
-      return false;
+      for(int i = 0; i < CustomerList.size(); i++) {
+        if(pNo == CustomerList.get(i).getpNo()) {
+          CustomerList.add(NewCustomer);
+          result = true;
+        }
+        else {
+          result = false;
+        }
+      }
+
+    } catch (IllegalStateException e) {
+      result = false;
     }
-    return true;
+    return result;
   }
 
 
@@ -69,18 +74,25 @@ public class BankLogic {
   [Lotta Larsson 7505121231, 1004 0.0 Sparkonto 1.0, 1005 0.0 Sparkonto 1.0]
 
    */
-  
+
 
   public ArrayList<String> getCustomer(String pNo){
 
     ArrayList<String> results = new ArrayList();
     String CustomerInfo;
     Customer MatchedCustomerObject;
-    
+
     MatchedCustomerObject = matchCustomer(pNo);
-    CustomerInfo = MatchedCustomerObject.getCustomerInfo();
-    results.add(CustomerInfo);
-    results.addAll(MatchedCustomerObject.getAllCustomerAccountInfo());
+
+    try {
+      CustomerInfo = MatchedCustomerObject.getCustomerInfo();
+      results.add(CustomerInfo);
+      results.addAll(MatchedCustomerObject.getAllCustomerAccountInfo());
+    }
+    catch(NullPointerException e) {
+      results = null;
+    }
+
     return results;
   }
 
@@ -94,12 +106,12 @@ public class BankLogic {
   public boolean changeCustomerName(String name, String surname, String pNo) {
     Customer customer;
     boolean result = true;
-    
+
     try {
       customer = matchCustomer(pNo);
       customer.changeName(name, surname);
     }
-    catch(IllegalStateException e) {
+    catch(NullPointerException e) {
       result = false;
     }
     return result;
@@ -114,8 +126,8 @@ public class BankLogic {
   [Lotta Larsson 7505121231, 1004 0.0 Sparkonto 1.0 0.0, 1005 700.0 Sparkonto 1.0 7.0]
 
    */
-  
-  
+
+
   //Ska returnera alla saker som tas bort.
   public ArrayList<String> deleteCustomer(String pNo){
     Customer customer;
@@ -134,15 +146,15 @@ public class BankLogic {
   public int createSavingsAccount(String pNo) {
     Customer MatchedCustomerObject;
     int accountNumber;
-    
+
     try {
       MatchedCustomerObject = matchCustomer(pNo);
       accountNumber = MatchedCustomerObject.addAccount();
     }
-    catch (IllegalStateException e) { 
-    return -1;
+    catch (NullPointerException e) { 
+      return -1;
     }
-  return accountNumber;  
+    return accountNumber;  
   }
 
 
@@ -154,9 +166,14 @@ public class BankLogic {
   public String getAccount(String pNo, int accountId) {
     String result;
     Customer customer;
-    customer = matchCustomer(pNo);
-    result = customer.getCustomerAccountInfo(accountId);
     
+    try {
+      customer = matchCustomer(pNo);
+      result = customer.getCustomerAccountInfo(accountId);
+    }
+    catch(NullPointerException e) {
+      result = null;
+    }
     return result;
 
   }
@@ -167,9 +184,18 @@ public class BankLogic {
   public boolean deposit(String pNo, int accountId, double amount) {
     SavingsAccount account;
     Customer customer;
-    customer = matchCustomer(pNo);
-    account = customer.matchAccount(accountId);
-    account.deposit(amount);
+    boolean result;
+
+    try {
+      customer = matchCustomer(pNo);
+      account = customer.matchAccount(accountId);
+      account.deposit(amount);
+      result = true;
+    }
+    catch(NullPointerException e) {
+      result = false;
+    }
+
     return true;
 
   }
@@ -181,10 +207,19 @@ public class BankLogic {
   public boolean withdraw(String pNo, int accountId, double amount) {
     SavingsAccount account;
     Customer customer;
-    customer = matchCustomer(pNo);
-    account = customer.matchAccount(accountId);
-    account.withdraw(amount);
-    return true;
+    boolean result;
+
+
+    try {
+      customer = matchCustomer(pNo);
+      account = customer.matchAccount(accountId);
+      account.withdraw(amount);
+      result = true;
+    }
+    catch(NullPointerException e) {
+      result = false;
+    }
+    return result;
 
   }
 
@@ -198,10 +233,14 @@ public class BankLogic {
   public boolean closeAccount(String pNr, int accountId) {
     Customer customer;
     boolean result;
-    customer = matchCustomer(pNr);
-    result = customer.deleteAccount(accountId);
-    return result;
 
+    try {
+      customer = matchCustomer(pNr);
+      result = customer.deleteAccount(accountId);
+    } catch (NullPointerException e) {
+      result = false;
+    }
+    return result;
   }
 
 
@@ -210,13 +249,6 @@ public class BankLogic {
     String welcomeMessage = "---Welcome to SeBanking Co.---\n";
 
     System.out.println(welcomeMessage);
-
-    BankLogic BankApp = new BankLogic();
-    BankApp.createCustomer("Anna", "Andersson", "9913997654");
-    Customer testCustomer = new Customer("TEstname", "surname", "9913997654");
-    String test = testCustomer.getCustomerInfo();
-
-
 
   }
 }
