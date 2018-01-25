@@ -114,8 +114,13 @@ public class BankLogic {
   [Lotta Larsson 7505121231, 1004 0.0 Sparkonto 1.0 0.0, 1005 700.0 Sparkonto 1.0 7.0]
 
    */
-
+  
+  
+  //Ska returnera alla saker som tas bort.
   public ArrayList<String> deleteCustomer(String pNo){
+    Customer customer;
+    customer = matchCustomer(pNo);
+    CustomerList.remove(customer);
     return null;
 
   }
@@ -160,7 +165,12 @@ public class BankLogic {
    */
 
   public boolean deposit(String pNo, int accountId, double amount) {
-    return false;
+    SavingsAccount account;
+    Customer customer;
+    customer = matchCustomer(pNo);
+    account = customer.matchAccount(accountId);
+    account.deposit(amount);
+    return true;
 
   }
 
@@ -169,7 +179,12 @@ public class BankLogic {
   Returnerar true om det gick bra annars false
    */
   public boolean withdraw(String pNo, int accountId, double amount) {
-    return false;
+    SavingsAccount account;
+    Customer customer;
+    customer = matchCustomer(pNo);
+    account = customer.matchAccount(accountId);
+    account.withdraw(amount);
+    return true;
 
   }
 
@@ -180,8 +195,12 @@ public class BankLogic {
   Returnerar null om inget konto togs bort
    */
 
-  public String closeAccount(String pNr, int accountId) {
-    return pNr;
+  public boolean closeAccount(String pNr, int accountId) {
+    Customer customer;
+    boolean result;
+    customer = matchCustomer(pNr);
+    result = customer.deleteAccount(accountId);
+    return result;
 
   }
 

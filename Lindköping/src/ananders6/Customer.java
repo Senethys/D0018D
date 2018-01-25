@@ -21,6 +21,18 @@ public class Customer {
   }
   
   
+  public SavingsAccount matchAccount(int accountId) {
+    SavingsAccount matchedAccount = null;
+    
+    for(int i = 0; Accounts.size() > i; i++) {
+      if(Accounts.get(i).getAccountNumber() == accountId) {
+        matchedAccount = Accounts.get(i);
+      }
+    }
+     
+    return matchedAccount;
+  }
+  
   
 
   public void changeName(String newName, String newLastname) {
@@ -46,7 +58,6 @@ public class Customer {
   
   
   
-  
   public ArrayList<String> getAllCustomerAccountInfo() {
     
     ArrayList<String> results = new ArrayList();
@@ -59,9 +70,6 @@ public class Customer {
     
    return results;
   }
-  
-  
-  
   
   
   public String getCustomerAccountInfo(int accountID) {
@@ -77,6 +85,12 @@ public class Customer {
   }
   
   
+  public boolean deleteAccount(int accountId) {
+    boolean result = false;
+    Accounts.remove(accountId);
+    result = true;
+    return result;
+  }
   
   
   public String getpNo() {

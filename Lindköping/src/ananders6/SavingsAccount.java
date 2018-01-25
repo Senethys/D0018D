@@ -17,11 +17,13 @@ public class SavingsAccount {
   }
   
   
-  public void deposit() {
+  public void deposit(double amount) {
+    this.balance += amount;
     
   }
   
-  public void withdraw() {
+  public void withdraw(double amount) {
+    this.balance -= amount;
     
   }
   
@@ -39,12 +41,6 @@ public class SavingsAccount {
 
   public void calculateInterest() {
    
-  }
-  
-  
-  
-  public void deleteAccount() {
-  
   }
 }
   
