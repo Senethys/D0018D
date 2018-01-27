@@ -2,26 +2,27 @@ package ananders6;
 
 
 public class SavingsAccount {
-  
+
   private double balance = 0.0;
-  private double interestRate;
-  private String type;
+  private double interestRate = 1.0;
+  private String type = "Sparkonto";
   private int accountNumber;
   private static int lastAccountNumber = 1000;
-  
-  
+
+
   public SavingsAccount() {
-  
+
     this.accountNumber = lastAccountNumber++;
   }
-  
-  
+
+
   public void deposit(double amount) {
     this.balance += amount;
-    
+
   }
-  
+
   public void withdraw(double amount) {
+
     if ((balance - amount) < 0) {
       this.balance -= 0; 
     }
@@ -29,24 +30,31 @@ public class SavingsAccount {
       this.balance -= amount;
     }
   }
-  
-  
- public int getAccountNumber() {
-   
-   return accountNumber;
+
+
+  public int getAccountNumber() {
+
+    return accountNumber;
 
   }
-  
+
   public String getAccountInfo() {
-    return accountNumber + ' ' + balance + ' ' + type + ' ' + interestRate;
+    return accountNumber + ' ' + balance + ' ' + type + ' ' + interestRate + ' ' + calculateInterest();
   }
-  
 
-  public void calculateInterest() {
-   
+
+  public double calculateInterest() {
+    return (this.balance * this.interestRate / 100.0);
+
   }
+
+  public void changeAccountType(String newType) {
+    this.type = newType;
+
+  }
+
 }
-  
+
 
 
 /* 

@@ -46,19 +46,21 @@ public class BankLogic {
 
 
   public boolean createCustomer(String name, String surname, String pNo) {
+
     boolean result = false;
+
     try {
-      Customer NewCustomer = new Customer(name, surname, pNo);
+
       for(int i = 0; i < CustomerList.size(); i++) {
         if(pNo == CustomerList.get(i).getpNo()) {
+          result = false;
+        }
+        else {
+          Customer NewCustomer = new Customer(name, surname, pNo);
           CustomerList.add(NewCustomer);
           result = true;
         }
-        else {
-          result = false;
-        }
       }
-
     } catch (IllegalStateException e) {
       result = false;
     }
@@ -81,10 +83,10 @@ public class BankLogic {
     ArrayList<String> results = new ArrayList();
     String CustomerInfo;
     Customer MatchedCustomerObject;
-
-    MatchedCustomerObject = matchCustomer(pNo);
-
+    
     try {
+      
+      MatchedCustomerObject = matchCustomer(pNo);
       CustomerInfo = MatchedCustomerObject.getCustomerInfo();
       results.add(CustomerInfo);
       results.addAll(MatchedCustomerObject.getAllCustomerAccountInfo());
@@ -105,7 +107,7 @@ public class BankLogic {
 
   public boolean changeCustomerName(String name, String surname, String pNo) {
     Customer customer;
-    boolean result = true;
+    boolean result = false;
 
     try {
       customer = matchCustomer(pNo);
@@ -130,10 +132,22 @@ public class BankLogic {
 
   //Ska returnera alla saker som tas bort.
   public ArrayList<String> deleteCustomer(String pNo){
-    Customer customer;
-    customer = matchCustomer(pNo);
-    CustomerList.remove(customer);
-    return null;
+    Customer MatchedCustomerObject;
+    ArrayList<String> results = new ArrayList();
+    String customerInfo;
+    
+    try {
+      MatchedCustomerObject = matchCustomer(pNo);
+      customerInfo = MatchedCustomerObject.getCustomerInfo();
+      results.add(customerInfo);
+      results.addAll(MatchedCustomerObject.getAllCustomerAccountInfo());
+      CustomerList.remove(MatchedCustomerObject);
+    }
+      catch(NullPointerException e) {
+        results = null;
+    }
+
+    return results;
 
   }
 
@@ -166,7 +180,7 @@ public class BankLogic {
   public String getAccount(String pNo, int accountId) {
     String result;
     Customer customer;
-    
+
     try {
       customer = matchCustomer(pNo);
       result = customer.getCustomerAccountInfo(accountId);
@@ -184,7 +198,7 @@ public class BankLogic {
   public boolean deposit(String pNo, int accountId, double amount) {
     SavingsAccount account;
     Customer customer;
-    boolean result;
+    boolean result = false;
 
     try {
       customer = matchCustomer(pNo);
@@ -196,7 +210,7 @@ public class BankLogic {
       result = false;
     }
 
-    return true;
+    return result;
 
   }
 
