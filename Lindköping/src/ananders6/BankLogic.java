@@ -1,6 +1,11 @@
 package ananders6;
 import java.util.ArrayList;
 
+/**
+ * Kort beskrivning av klassen, vad den gör. 
+ * @author Anna Andersson, ananders-6
+ */
+
 
 
 public class BankLogic {
@@ -10,15 +15,19 @@ public class BankLogic {
   public BankLogic() {}
 
 
-  //Returns customer object
-  private Customer matchCustomer(String pNo) {
+  /**
+   * 
+   * @param 
+   * @return void
+   */
+  private Customer matchCustomer(String pNr) {
 
-    String matchedpNo;
+    String matchedpNr;
     Customer MatchedCustomerObject = null;
 
     for(int i = 0; i < CustomerList.size(); i++) {
-      matchedpNo = CustomerList.get(i).getpNo(); {
-        if(matchedpNo.equals(pNo)) {
+      matchedpNr = CustomerList.get(i).getpNr(); {
+        if(matchedpNr.equals(pNr)) {
           MatchedCustomerObject = CustomerList.get(i);
         }
       }
@@ -27,9 +36,14 @@ public class BankLogic {
   }
 
 
-  //RReturnerar en ArrayList<String> som innehåller en presentation av bankens alla kunder på följande sätt: 
+  //Returnerar en ArrayList<String> som innehåller en presentation av bankens alla kunder på följande sätt: 
   //[Karl Karlsson 8505221898, Pelle Persson 6911258876, Lotta Larsson 7505121231]
 
+  /**
+   * 
+   * @param 
+   * @return void
+   */
   public ArrayList<String> getAllCustomers() {
 
     ArrayList<String> results = new ArrayList();
@@ -44,25 +58,34 @@ public class BankLogic {
 
 
 
-
-  public boolean createCustomer(String name, String surname, String pNo) {
+  /**
+   * 
+   * @param 
+   * @return void
+   */
+  public boolean createCustomer(String name, String surname, String pNr) {
 
     boolean result = false;
-
-    try {
-
+    boolean exists = false;
+    //If customers exists
+    if(CustomerList.size() != 0) {
+      //Scan after matching pNr
       for(int i = 0; i < CustomerList.size(); i++) {
-        if(pNo == CustomerList.get(i).getpNo()) {
-          result = false;
-        }
-        else {
-          Customer NewCustomer = new Customer(name, surname, pNo);
-          CustomerList.add(NewCustomer);
-          result = true;
-        }
+        if(pNr.equals(CustomerList.get(i).getpNr())) {
+          exists = true;
+          break;
+        } 
       }
-    } catch (IllegalStateException e) {
-      result = false;
+
+      if(!exists) {
+        Customer NewCustomer = new Customer(name, surname, pNr);
+        CustomerList.add(NewCustomer);
+        result = true;
+      }
+    } else {
+      Customer NewCustomer = new Customer(name, surname, pNr);
+      CustomerList.add(NewCustomer);
+      result = true;
     }
     return result;
   }
@@ -76,17 +99,19 @@ public class BankLogic {
   [Lotta Larsson 7505121231, 1004 0.0 Sparkonto 1.0, 1005 0.0 Sparkonto 1.0]
 
    */
-
-
-  public ArrayList<String> getCustomer(String pNo){
+  /**
+   * 
+   * @param 
+   * @return void
+   */
+  public ArrayList<String> getCustomer(String pNr){
 
     ArrayList<String> results = new ArrayList();
     String CustomerInfo;
     Customer MatchedCustomerObject;
-    
+
     try {
-      
-      MatchedCustomerObject = matchCustomer(pNo);
+      MatchedCustomerObject = matchCustomer(pNr);
       CustomerInfo = MatchedCustomerObject.getCustomerInfo();
       results.add(CustomerInfo);
       results.addAll(MatchedCustomerObject.getAllCustomerAccountInfo());
@@ -100,20 +125,27 @@ public class BankLogic {
 
 
   /**
-  Byter namn på vald kund, inparametern pNo anger vilken kund som ska få nytt namn.
+  Byter namn på vald kund, inparametern pNr anger vilken kund som ska få nytt namn.
   Returnerar true om namnet ändrades annars returnerar false (alltså om kunden inte fanns).
 
    */
 
-  public boolean changeCustomerName(String name, String surname, String pNo) {
+  /**
+   * 
+   * @param 
+   * @return void
+   */
+  public boolean changeCustomerName(String name, String surname, String pNr) {
     Customer customer;
     boolean result = false;
 
     try {
-      customer = matchCustomer(pNo);
+      customer = matchCustomer(pNr);
       customer.changeName(name, surname);
+      result = true;
     }
     catch(NullPointerException e) {
+      System.out.println("This person does not exist.");
       result = false;
     }
     return result;
@@ -130,21 +162,26 @@ public class BankLogic {
    */
 
 
-  //Ska returnera alla saker som tas bort.
-  public ArrayList<String> deleteCustomer(String pNo){
+  /**
+   * 
+   * @param 
+   * @return void
+   */
+  public ArrayList<String> deleteCustomer(String pNr){
     Customer MatchedCustomerObject;
     ArrayList<String> results = new ArrayList();
     String customerInfo;
-    
+
     try {
-      MatchedCustomerObject = matchCustomer(pNo);
+      MatchedCustomerObject = matchCustomer(pNr);
       customerInfo = MatchedCustomerObject.getCustomerInfo();
       results.add(customerInfo);
-      results.addAll(MatchedCustomerObject.getAllCustomerAccountInfo());
+
+      results.addAll(MatchedCustomerObject.getFullCustomerAccountInfo());
       CustomerList.remove(MatchedCustomerObject);
     }
-      catch(NullPointerException e) {
-        results = null;
+    catch(NullPointerException e) {
+      results = null;
     }
 
     return results;
@@ -152,17 +189,22 @@ public class BankLogic {
   }
 
 
-  /**Skapar ett konto till kund med personnummer pNo
+  /**Skapar ett konto till kund med personnummer pNr
   Kontonummer ska vara unika för hela banken, inte bara för en enskild kund (se Big Java Late Objects på s. 400Preview the documentView in a new window för tips på lösning).
   Returnerar kontonumret som det skapade kontot fick
   Alternativt returneras –1 om inget konto skapades
    */
-  public int createSavingsAccount(String pNo) {
+  /**
+   * 
+   * @param 
+   * @return void
+   */
+  public int createSavingsAccount(String pNr) {
     Customer MatchedCustomerObject;
     int accountNumber;
 
     try {
-      MatchedCustomerObject = matchCustomer(pNo);
+      MatchedCustomerObject = matchCustomer(pNr);
       accountNumber = MatchedCustomerObject.addAccount();
     }
     catch (NullPointerException e) { 
@@ -174,15 +216,20 @@ public class BankLogic {
 
   /**
    * 
-  Returnerar en String som innehåller presentation av kontot med kontonnummer accountId som tillhör kunden pNo (kontonummer saldo, kontotyp räntesats).
+  Returnerar en String som innehåller presentation av kontot med kontonnummer accountId som tillhör kunden pNr (kontonummer saldo, kontotyp räntesats).
   Returnerar null om konto inte finns eller om det inte tillhör kunden
+   */ 
+   /**
+   * 
+   * @param 
+   * @return void
    */
-  public String getAccount(String pNo, int accountId) {
+  public String getAccount(String pNr, int accountId) {
     String result;
     Customer customer;
 
     try {
-      customer = matchCustomer(pNo);
+      customer = matchCustomer(pNr);
       result = customer.getCustomerAccountInfo(accountId);
     }
     catch(NullPointerException e) {
@@ -191,17 +238,21 @@ public class BankLogic {
     return result;
 
   }
-  /**Gör en insättning på konto med kontonnummer accountId som tillhör kunden pNo.
+  /**Gör en insättning på konto med kontonnummer accountId som tillhör kunden pNr.
   Returnerar true om det gick bra annars false
    */
-
-  public boolean deposit(String pNo, int accountId, double amount) {
+  /**
+   * 
+   * @param 
+   * @return void
+   */
+  public boolean deposit(String pNr, int accountId, double amount) {
     SavingsAccount account;
     Customer customer;
     boolean result = false;
 
     try {
-      customer = matchCustomer(pNo);
+      customer = matchCustomer(pNr);
       account = customer.matchAccount(accountId);
       account.deposit(amount);
       result = true;
@@ -214,21 +265,24 @@ public class BankLogic {
 
   }
 
-  /**Gör ett uttag på konto med kontonnummer accountId som tillhör kunden pNo.
+  /**Gör ett uttag på konto med kontonnummer accountId som tillhör kunden pNr.
   Uttaget genomförs endast om saldot täcker uttaget (saldot får inte bli mindre än 0)
   Returnerar true om det gick bra annars false
    */
-  public boolean withdraw(String pNo, int accountId, double amount) {
+  /**
+   * 
+   * @param 
+   * @return void
+   */
+  public boolean withdraw(String pNr, int accountId, double amount) {
     SavingsAccount account;
     Customer customer;
     boolean result;
 
-
     try {
-      customer = matchCustomer(pNo);
+      customer = matchCustomer(pNr);
       account = customer.matchAccount(accountId);
-      account.withdraw(amount);
-      result = true;
+      result = account.withdraw(amount);
     }
     catch(NullPointerException e) {
       result = false;
@@ -238,29 +292,41 @@ public class BankLogic {
   }
 
 
-  /**Avslutar ett konto med kontonnummer accountId som tillhör kunden pNo. När man avslutar ett konto skall räntan beräknas som saldo*ränta/100.
+  /**Avslutar ett konto med kontonnummer accountId som tillhör kunden pNr. När man avslutar ett konto skall räntan beräknas som saldo*ränta/100.
   OBS! Enda gången ränta läggs på är när kontot tas bort eftersom årsskiften inte hanteras i denna version av systemet.
   Presentation av kontot ska returneras inklusive räntan man får på pengarna (kontonummer saldo, kontotyp räntesats, ränta)
   Returnerar null om inget konto togs bort
    */
-
-  public boolean closeAccount(String pNr, int accountId) {
+  /**
+   * 
+   * @param 
+   * @return void
+   */
+  public String closeAccount(String pNr, int accountId) {
     Customer customer;
-    boolean result;
+    SavingsAccount account;
+    String result;
 
     try {
       customer = matchCustomer(pNr);
-      result = customer.deleteAccount(accountId);
+      account = customer.matchAccount(accountId);
+      result = customer.getCustomerAccountInfo(accountId);
+      result += " " + account.calculateInterest();
+      customer.closeAccount(accountId);
     } catch (NullPointerException e) {
-      result = false;
+      result = null;
     }
     return result;
   }
 
-
+  /**
+   * 
+   * @param 
+   * @return void
+   */
   public static void main(String[] args) {
 
-    String welcomeMessage = "---Welcome to SeBanking Co.---\n";
+    String welcomeMessage = "---Welcome to Banking Co.---\n";
 
     System.out.println(welcomeMessage);
 

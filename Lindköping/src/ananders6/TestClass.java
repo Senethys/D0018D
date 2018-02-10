@@ -361,7 +361,7 @@ public class TestClass
     testingGetAllCustomers();
     System.out.println("# []");
     System.out.println();
-
+    System.out.println("End of test");
     ps.close();
   }
 

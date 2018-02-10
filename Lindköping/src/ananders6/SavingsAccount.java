@@ -1,5 +1,9 @@
 package ananders6;
 
+/**
+ * Kort beskrivning av klassen, vad den gör. 
+ * @author Anna Andersson, ananders-6
+ */
 
 public class SavingsAccount {
 
@@ -7,12 +11,11 @@ public class SavingsAccount {
   private double interestRate = 1.0;
   private String type = "Sparkonto";
   private int accountNumber;
-  private static int lastAccountNumber = 1000;
+  private static int lastAccountNumber = 1001;
 
 
   public SavingsAccount() {
-
-    this.accountNumber = lastAccountNumber++;
+    accountNumber = lastAccountNumber++;
   }
 
 
@@ -21,25 +24,26 @@ public class SavingsAccount {
 
   }
 
-  public void withdraw(double amount) {
+  public boolean withdraw(double amount) {
+    double difference = balance - amount;
+    boolean result = false;
 
-    if ((balance - amount) < 0) {
-      this.balance -= 0; 
+    if (!(difference < 0.0)) {
+      this.balance = balance - amount;
+      result = true;
     }
-    else {
-      this.balance -= amount;
-    }
+    return result;
   }
 
 
   public int getAccountNumber() {
-
     return accountNumber;
 
   }
 
   public String getAccountInfo() {
-    return accountNumber + ' ' + balance + ' ' + type + ' ' + interestRate + ' ' + calculateInterest();
+    return accountNumber + " " + balance + ' ' + type + ' ' + interestRate;
+
   }
 
 
@@ -54,28 +58,3 @@ public class SavingsAccount {
   }
 
 }
-
-
-
-/* 
- * 1. Create new customer
- *  1.1 Add account
- *   1.1.1 deposit
- *   1.1.2 withdraw
- *   1.1.3 get accout number
- *   1.1.4 get account info
- *   1.1.5 calculate interest
- *   1.1.6 delete account
- *  1.2 Change name
- *  1.3 Get customer info
- *  1.4 Get customer account info
- * 2. Get all customers
- * 3. Get Customer
- * 4. Change Customer name
- * 5. delete Customer 
- * 6. Create Savings account
- * 7. Get Account
- * 8. deposit
- * 9. withdraw
- * 10. close account
- */
