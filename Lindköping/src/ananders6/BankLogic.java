@@ -2,10 +2,9 @@ package ananders6;
 import java.util.ArrayList;
 
 /**
- * Kort beskrivning av klassen, vad den gör. 
+ * Huvudclassen som innehåller alla klasser, Customer och SavingsAccount. 
  * @author Anna Andersson, ananders-6
  */
-
 
 
 public class BankLogic {
@@ -16,9 +15,9 @@ public class BankLogic {
 
 
   /**
-   * 
-   * @param 
-   * @return void
+   * Letar bland kunder där p
+   * @param Personnummer.
+   * @return Customer object.
    */
   private Customer matchCustomer(String pNr) {
 
