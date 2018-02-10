@@ -15,7 +15,7 @@ public class BankLogic {
 
 
   /**
-   * Letar bland kunder där p
+   * Letar bland kundlistan där pNr matchar objektets och returnerar den.
    * @param Personnummer.
    * @return Customer object.
    */
@@ -35,12 +35,9 @@ public class BankLogic {
   }
 
 
-  //Returnerar en ArrayList<String> som innehåller en presentation av bankens alla kunder på följande sätt: 
-  //[Karl Karlsson 8505221898, Pelle Persson 6911258876, Lotta Larsson 7505121231]
-
   /**
-   * 
-   * @param 
+   * Returnerar en ArrayList<String> som innehåller en presentation av bankens alla kunder.
+   * @param void
    * @return void
    */
   public ArrayList<String> getAllCustomers() {
@@ -58,9 +55,9 @@ public class BankLogic {
 
 
   /**
-   * 
-   * @param 
-   * @return void
+   * Skapar ett Customer objekt och lägger den i en ArrayList
+   * @param String name, surname, pNr
+   * @return boolean
    */
   public boolean createCustomer(String name, String surname, String pNr) {
 
@@ -90,18 +87,11 @@ public class BankLogic {
   }
 
 
-  /**
-   * Returnerar en ArrayList<String> som innehåller informationen om kunden inklusive dennes konton.
-  Returnerar null om kunden inte fanns
-  Första platsen i listan är reserverad för kundens namn och personnummer sedan följer informationen om kundens konton (kontonr saldo kontotyp räntesats)
-  Exempel på hur det som returneras ska se ut:
-  [Lotta Larsson 7505121231, 1004 0.0 Sparkonto 1.0, 1005 0.0 Sparkonto 1.0]
 
-   */
-  /**
+  /**Returnerar en ArrayList<String> som innehåller informationen om kunden inklusive dennes konton.
    * 
-   * @param 
-   * @return void
+   * @param String pNr
+   * @return ArrayList<String>
    */
   public ArrayList<String> getCustomer(String pNr){
 
@@ -123,15 +113,10 @@ public class BankLogic {
   }
 
 
-  /**
-  Byter namn på vald kund, inparametern pNr anger vilken kund som ska få nytt namn.
-  Returnerar true om namnet ändrades annars returnerar false (alltså om kunden inte fanns).
-
-   */
 
   /**
-   * 
-   * @param 
+   * Byter namn på existerande kund.
+   * @param String name, surname, pNr
    * @return void
    */
   public boolean changeCustomerName(String name, String surname, String pNr) {
@@ -161,10 +146,10 @@ public class BankLogic {
    */
 
 
-  /**
+  /** Tar bort och alla dess konton från banken. Allt som togs bort returneras som strängar i ArrayList.
    * 
-   * @param 
-   * @return void
+   * @param String pNr
+   * @return ArrayList<String>
    */
   public ArrayList<String> deleteCustomer(String pNr){
     Customer MatchedCustomerObject;
@@ -188,15 +173,11 @@ public class BankLogic {
   }
 
 
-  /**Skapar ett konto till kund med personnummer pNr
-  Kontonummer ska vara unika för hela banken, inte bara för en enskild kund (se Big Java Late Objects på s. 400Preview the documentView in a new window för tips på lösning).
-  Returnerar kontonumret som det skapade kontot fick
-  Alternativt returneras –1 om inget konto skapades
-   */
-  /**
+
+  /**Skapar ett unikt konto till kund med personnummer pNr. Returnerar -1 om den inte skapades.
    * 
-   * @param 
-   * @return void
+   * @param String pNr
+   * @return int 
    */
   public int createSavingsAccount(String pNr) {
     Customer MatchedCustomerObject;
@@ -213,15 +194,10 @@ public class BankLogic {
   }
 
 
-  /**
-   * 
-  Returnerar en String som innehåller presentation av kontot med kontonnummer accountId som tillhör kunden pNr (kontonummer saldo, kontotyp räntesats).
-  Returnerar null om konto inte finns eller om det inte tillhör kunden
-   */ 
    /**
-   * 
-   * @param 
-   * @return void
+   * Returnerar en String som innehåller presentation av kontot med kontonnummer accountId som tillhör kunden pNr
+   * @param String pNr, int account Id
+   * @return String
    */
   public String getAccount(String pNr, int accountId) {
     String result;
@@ -237,13 +213,13 @@ public class BankLogic {
     return result;
 
   }
+  
+  
   /**Gör en insättning på konto med kontonnummer accountId som tillhör kunden pNr.
-  Returnerar true om det gick bra annars false
-   */
-  /**
+   * Returnerar true om det gick bra annars false	
    * 
-   * @param 
-   * @return void
+   * @param String pNr, int accountId, double amount.
+   * @return boolean
    */
   public boolean deposit(String pNr, int accountId, double amount) {
     SavingsAccount account;
@@ -265,13 +241,9 @@ public class BankLogic {
   }
 
   /**Gör ett uttag på konto med kontonnummer accountId som tillhör kunden pNr.
-  Uttaget genomförs endast om saldot täcker uttaget (saldot får inte bli mindre än 0)
-  Returnerar true om det gick bra annars false
-   */
-  /**
-   * 
-   * @param 
-   * @return void
+   * Returnerar true om det gick bra annars false
+   * @param String pNr, int accountId, double amount
+   * @return boolean
    */
   public boolean withdraw(String pNr, int accountId, double amount) {
     SavingsAccount account;
@@ -291,15 +263,10 @@ public class BankLogic {
   }
 
 
-  /**Avslutar ett konto med kontonnummer accountId som tillhör kunden pNr. När man avslutar ett konto skall räntan beräknas som saldo*ränta/100.
-  OBS! Enda gången ränta läggs på är när kontot tas bort eftersom årsskiften inte hanteras i denna version av systemet.
-  Presentation av kontot ska returneras inklusive räntan man får på pengarna (kontonummer saldo, kontotyp räntesats, ränta)
-  Returnerar null om inget konto togs bort
-   */
-  /**
-   * 
-   * @param 
-   * @return void
+  /**Avslutar ett konto med kontonnummer accountId som tillhör kunden pNr.
+   * Returnerar null om inget konto togs bort
+   * @param String pNr, int accountId
+   * @return String
    */
   public String closeAccount(String pNr, int accountId) {
     Customer customer;
@@ -316,18 +283,5 @@ public class BankLogic {
       result = null;
     }
     return result;
-  }
-
-  /**
-   * 
-   * @param 
-   * @return void
-   */
-  public static void main(String[] args) {
-
-    String welcomeMessage = "---Welcome to Banking Co.---\n";
-
-    System.out.println(welcomeMessage);
-
   }
 }

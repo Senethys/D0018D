@@ -2,7 +2,7 @@ package ananders6;
 import java.util.ArrayList;
 
 /**
- * Kort beskrivning av klassen, vad den gör. 
+ * Ansvarar för kundens data och spara alla kundens konton i en ArrayList.
  * @author Anna Andersson, ananders-6
  */
 
@@ -14,14 +14,18 @@ public class Customer {
   private String ssn;
   private ArrayList<SavingsAccount> Accounts = new ArrayList();
 
-
+  //En kund måste allitd konstrueras med namn, efternamn och personnummer.
   public Customer(String fname, String lname, String sNumber) {
     this.name = fname;
     this.lastname = lname;
     this.ssn = sNumber;
   }
 
-
+  /** Leter efter existerande kunder efter matchad accountId och returnerar.
+   *  returnerar null om inget hittades.
+   * @param int accountId
+   * @return SavingsAccount
+   */
   public SavingsAccount matchAccount(int accountId) {
     SavingsAccount matchedAccount = null;
 
@@ -35,16 +39,22 @@ public class Customer {
   }
 
 
-
+  /** Byter namn på angiven kund.
+  * @param String newNameme, newLastname
+  * @return void
+  */
   public void changeName(String newName, String newLastname) {
     this.name = newName;
     this.lastname = newLastname;
     System.out.println(this.name + " " + this.lastname);
   }
 
-
-
-
+  /** Skapar ett nytt konto objekt och spara den i kundobjektets ArrayList.
+  *
+  * @param void
+  * @return int
+  */
+  
   public int addAccount() {
     System.out.println("Adding new accout...");
     SavingsAccount account = new SavingsAccount();
@@ -53,7 +63,12 @@ public class Customer {
   }
 
 
-
+  /** Returnerar all info om kunden inclusive alla konton utan beräknad ränta.
+  *
+  * @param void 
+  * @return ArrayList<String>
+  */
+  
   public ArrayList<String> getAllCustomerAccountInfo() {
 
     ArrayList<String> results = new ArrayList();
@@ -67,7 +82,11 @@ public class Customer {
     return results;
   }
 
-
+  /** Returnerar all info om kundens konton inclusive alla konton med ränta beräknad.
+  *
+  * @param void
+  * @return Array<String>
+  */
   public ArrayList<String> getFullCustomerAccountInfo() {
 
     ArrayList<String> results = new ArrayList();
@@ -81,6 +100,12 @@ public class Customer {
     return results;
   }
 
+  
+  /** Returnerar info om ett konto utan beräknad ränta.
+  *
+  * @param int accountId
+  * @return String
+  */
 
   public String getCustomerAccountInfo(int accountID) {
 
@@ -95,7 +120,11 @@ public class Customer {
   }
 
 
-
+  /** Stänger av kundens konto med angivent kontonr. 
+  * returnerar true/false beroende på utfallet.
+  * @param Int accountId
+  * @return boolean
+  */
   public boolean closeAccount(int accountId) {
     boolean result;
     try {
@@ -111,19 +140,40 @@ public class Customer {
     return result;
   }
 
-
+  /** Returnerar kundens personnummer.
+  *
+  * @param void
+  * @return String
+  */
   public String getpNr() {
     return ssn;
   }
-
+  
+  /** Returnerar kundens namn.
+  *
+  * @param void
+  * @return String
+  */
   public String getCustomerName() {
     return name;
   }
 
+  
+  /** Returnerar personens efternamn
+  *
+  * @param void
+  * @return String
+  */
   public String getCustomerLastname() {
     return lastname;
   }
 
+  
+  /** Returnerar all information om kunden, exclusive kontoinfo.
+  *
+  * @param void
+  * @return String
+  */
   public String getCustomerInfo() {
     String result;
     result = name + ' ' + lastname + ' ' + ssn;
