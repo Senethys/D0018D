@@ -7,6 +7,7 @@ package ananders6;
 
 public class CreditAccount {
 
+  private double creditLimit = 5000.0;
   private double balance = 0.0;
   private double interestRate = 1.0;
   private String type = "Kreditkonto";
