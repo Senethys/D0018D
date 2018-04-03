@@ -10,5 +10,4 @@ public class main {
     ArrayList<String> result = bank.getAllCustomers();
     System.out.println("  " + result);
   }
-
 }

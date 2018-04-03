@@ -2,7 +2,7 @@ package ananders6;
 import java.util.ArrayList;
 
 /**
- * Huvudclassen som innehåller alla klasser, Customer och SavingsAccount. 
+ * Huvudclassen som innehåller alla klasser, Customer och Accountyper. 
  * @author Anna Andersson, ananders-6
  */
 
