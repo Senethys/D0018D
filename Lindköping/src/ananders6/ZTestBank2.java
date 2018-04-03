@@ -4,11 +4,9 @@
  * Last changes:  2017-01-27
  * @author Susanne Fahlman, susanne.fahlman@ltu.se       
  */
-
+package ananders6;
 import java.io.*;
 import java.util.ArrayList;
-
-import enecat6.BankLogic;
 
 public class ZTestBank2
 {
