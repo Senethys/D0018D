@@ -18,6 +18,23 @@ public abstract class Account {
 		accountNumber = lastAccountNumber++;
 	}
 	
+	
+	  /** Lägger till amount i kontots saldo.
+	  *
+	  * @param double amount
+	  * @return void
+	  */
+	  public abstract void deposit(double amount);
+	  
+	  
+	  /** Tar bort amount från kontot.
+	   * Man kan inte ta bort mer än saldo.
+	   * returnerar true om uttaget gick igenom.
+	   * @param double amount
+	   * @return boolean.
+	   */
+	   public abstract boolean withdraw(double amount);
+
 	  /** Returnerar kontots nummer
 	  *
 	  * @param void
@@ -48,6 +65,16 @@ public abstract class Account {
 	    return (this.balance * this.interestRate / 100.0);
 
 	  }
+	  
+	  /** Byter typen på kontot.
+	   * Har ingen funktionell funktion.
+	   * @param String newType
+	   * @return void
+	   */
+	   public void changeAccountType(String newType) {
+	     this.type = newType;
+
+	   }
 
 	
 }
