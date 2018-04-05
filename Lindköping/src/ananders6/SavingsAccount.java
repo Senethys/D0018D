@@ -1,4 +1,6 @@
 package ananders6;
+import java.util.Date;
+import java.util.ArrayList;
 
 /**
  * Denna klass tillhör en kund. SvaingsAccount innehar all data om ett konto.
@@ -7,15 +9,11 @@ package ananders6;
 
 public class SavingsAccount extends Account {
 
-  private double balance = 0.0;
-  private double interestRate = 1.0;
-  private String type = "Sparkonto";
-  private int accountNumber;
-  private static int lastAccountNumber = 1001;
+	private String type = "Sparkonto";
+
 
 
   public SavingsAccount() {
-    accountNumber = lastAccountNumber++;
   }
 
   /** Lägger till amount i kontots saldo.
@@ -23,65 +21,34 @@ public class SavingsAccount extends Account {
   * @param double amount
   * @return void
   */
+  @Override
   public void deposit(double amount) {
     this.balance += amount;
-
+    Date date = new Date();
+    System.out.println(date.toString());
+    String transactionDate = date.toString();
+    TransactionList.add(String.valueOf(amount));
+    TransactionList.add(transactionDate);
   }
+  
+  
   /** Tar bort amount från kontot.
   * Man kan inte ta bort mer än saldo.
   * returnerar true om uttaget gick igenom.
   * @param double amount
   * @return boolean.
   */
+  @Override
   public boolean withdraw(double amount) {
     double difference = balance - amount;
     boolean result = false;
 
     if (!(difference < 0.0)) {
       this.balance = balance - amount;
+      Date date = new Date();
+      System.out.println(date.toString());
       result = true;
     }
     return result;
   }
-
-  /** Returnerar kontots nummer
-  *
-  * @param void
-  * @return String
-  */
-  public int getAccountNumber() {
-    return accountNumber;
-
-  }
-  
-  /** Returnerar all information om kontot förutom räntan.s
-  *
-  * @param void
-  * @return String
-  */
-  public String getAccountInfo() {
-    return accountNumber + " " + balance + ' ' + type + ' ' + interestRate;
-
-  }
-
-  /** Beräknar kontots ränta.
-  *
-  * @param void
-  * @return double
-  */
-  public double calculateInterest() {
-    return (this.balance * this.interestRate / 100.0);
-
-  }
-  
-  /** Byter typen på kontot.
-  * Har ingen funktionell funktion.
-  * @param String newType
-  * @return void
-  */
-  public void changeAccountType(String newType) {
-    this.type = newType;
-
-  }
-
 }

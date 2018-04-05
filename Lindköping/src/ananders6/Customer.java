@@ -12,7 +12,7 @@ public class Customer {
   private String name;
   private String lastname;
   private String ssn;
-  private ArrayList<SavingsAccount> Accounts = new ArrayList();
+  private ArrayList<Account> Accounts = new ArrayList<Account>();
 
   //En kund måste allitd konstrueras med namn, efternamn och personnummer.
   public Customer(String fname, String lname, String sNumber) {
@@ -26,8 +26,8 @@ public class Customer {
    * @param int accountId
    * @return SavingsAccount
    */
-  public SavingsAccount matchAccount(int accountId) {
-    SavingsAccount matchedAccount = null;
+  public Account matchAccount(int accountId) {
+    Account matchedAccount = null;
 
     for(int i = 0; Accounts.size() > i; i++) {
       if(Accounts.get(i).getAccountNumber() == accountId) {
@@ -55,9 +55,23 @@ public class Customer {
   * @return int
   */
   
-  public int addAccount() {
-    System.out.println("Adding new accout...");
+  public int addSavingsAccount() {
+    System.out.println("Adding new savings account...");
     SavingsAccount account = new SavingsAccount();
+    Accounts.add(account);
+    return account.getAccountNumber();
+  }
+  
+  
+  /** Skapar ett nytt konto objekt och spara den i kundobjektets ArrayList.
+  *
+  * @param void
+  * @return int
+  */
+  
+  public int addCreditAccount() {
+    System.out.println("Adding new credit account...");
+    CreditAccount account = new CreditAccount();
     Accounts.add(account);
     return account.getAccountNumber();
   }
@@ -71,7 +85,7 @@ public class Customer {
   
   public ArrayList<String> getAllCustomerAccountInfo() {
 
-    ArrayList<String> results = new ArrayList();
+    ArrayList<String> results = new ArrayList<String>();
     String AccountInfo;
 
     for(int i = 0; Accounts.size() > i; i++) {
@@ -89,7 +103,7 @@ public class Customer {
   */
   public ArrayList<String> getFullCustomerAccountInfo() {
 
-    ArrayList<String> results = new ArrayList();
+    ArrayList<String> results = new ArrayList<String>();
     String AccountInfo;
 
     for(int i = 0; Accounts.size() > i; i++) {
@@ -128,7 +142,7 @@ public class Customer {
   public boolean closeAccount(int accountId) {
     boolean result;
     try {
-      SavingsAccount Acc = matchAccount(accountId);
+      Account Acc = matchAccount(accountId);
       Accounts.remove(Acc);
       result = true;
     } catch(IndexOutOfBoundsException e) {

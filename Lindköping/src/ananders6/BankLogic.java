@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 public class BankLogic {
 
-	private ArrayList<Customer> CustomerList = new ArrayList();
+	private ArrayList<Customer> CustomerList = new ArrayList<Customer>();
 
 	public BankLogic() {
 	}
@@ -46,7 +46,7 @@ public class BankLogic {
 	 */
 	public ArrayList<String> getAllCustomers() {
 
-		ArrayList<String> results = new ArrayList();
+		ArrayList<String> results = new ArrayList<String>();
 		String CustomerInfo;
 
 		for (int i = 0; CustomerList.size() > i; i++) {
@@ -100,7 +100,7 @@ public class BankLogic {
 	 */
 	public ArrayList<String> getCustomer(String pNr) {
 
-		ArrayList<String> results = new ArrayList();
+		ArrayList<String> results = new ArrayList<String>();
 		String CustomerInfo;
 		Customer MatchedCustomerObject;
 
@@ -162,7 +162,7 @@ public class BankLogic {
 	 */
 	public ArrayList<String> deleteCustomer(String pNr) {
 		Customer MatchedCustomerObject;
-		ArrayList<String> results = new ArrayList();
+		ArrayList<String> results = new ArrayList<String>();
 		String customerInfo;
 
 		try {
@@ -194,7 +194,7 @@ public class BankLogic {
 
 		try {
 			MatchedCustomerObject = matchCustomer(pNr);
-			accountNumber = MatchedCustomerObject.addAccount();
+			accountNumber = MatchedCustomerObject.addSavingsAccount();
 		} catch (NullPointerException e) {
 			return -1;
 		}
@@ -205,8 +205,7 @@ public class BankLogic {
 	 * Skapar ett unikt kreditkonto till kund med personnummer pNr. Returnerar -1 om
 	 * den inte skapades.
 	 * 
-	 * @param String
-	 *            pNr
+	 * @param String pNr
 	 * @return int
 	 */
 	public int createCreditAccount(String pNr) {
@@ -215,19 +214,19 @@ public class BankLogic {
 
 		try {
 			MatchedCustomerObject = matchCustomer(pNr);
-			accountNumber = MatchedCustomerObject.addAccount();
+			accountNumber = MatchedCustomerObject.addCreditAccount();
 		} catch (NullPointerException e) {
 			return -1;
 		}
 		return accountNumber;
 	}
+	
 
 	/**
 	 * Returnerar en String som innehåller presentation av kontot med kontonnummer
 	 * accountId som tillhör kunden pNr
 	 * 
-	 * @param String
-	 *            pNr, int account Id
+	 * @param String pNr, int account Id
 	 * @return String
 	 */
 	public String getAccount(String pNr, int accountId) {
@@ -249,26 +248,21 @@ public class BankLogic {
 	 * som gjorts på kontot, ex: [2017-01-30 09:17:06 -500.0 -500.0, 2017-01-30
 	 * 09:17:11 -4000.0 -4500.0]
 	 * 
-	 * @param String 	pNr, int accountId
+	 * @param String pNr, int accountId
 	 * @return ArrayList<String>
 	 */
 	public ArrayList<String> getTransactions(String pNr, int accountId) {
-		Customer MatchedCustomerObject;
-		ArrayList<String> results = new ArrayList();
-		String result;
+		ArrayList<String> results = new ArrayList<String>();
+		Account account;
 		Customer customer;
 
 		try {
-
 			customer = matchCustomer(pNr);
-			result = customer.getCustomerAccountInfo(accountId);
-
-			return result;
-			
+			account = customer.matchAccount(accountId);
+			results = account.getAccountTransactions();
 		} catch (NullPointerException e) {
-			results = null;
+			account = null;
 		}
-
 		return results;
 	}
 
@@ -281,7 +275,7 @@ public class BankLogic {
 	 * @return boolean
 	 */
 	public boolean deposit(String pNr, int accountId, double amount) {
-		SavingsAccount account;
+		Account account;
 		Customer customer;
 		boolean result = false;
 
@@ -307,7 +301,7 @@ public class BankLogic {
 	 * @return boolean
 	 */
 	public boolean withdraw(String pNr, int accountId, double amount) {
-		SavingsAccount account;
+		Account account;
 		Customer customer;
 		boolean result;
 
@@ -332,7 +326,7 @@ public class BankLogic {
 	 */
 	public String closeAccount(String pNr, int accountId) {
 		Customer customer;
-		SavingsAccount account;
+		Account account;
 		String result;
 
 		try {
