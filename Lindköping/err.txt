@@ -1,7 +1,0 @@
-Exception in thread "main" java.lang.Error: Unresolved compilation problem: 
-	Type mismatch: cannot convert from String to ArrayList<String>
-
-	at ananders6.BankLogic.getTransactions(BankLogic.java:266)
-	at ananders6.ZTestBank2.testingGetTransactions(ZTestBank2.java:421)
-	at ananders6.ZTestBank2.test(ZTestBank2.java:89)
-	at ananders6.ZTestBank2.main(ZTestBank2.java:427)

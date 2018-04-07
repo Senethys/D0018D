@@ -205,7 +205,8 @@ public class BankLogic {
 	 * Skapar ett unikt kreditkonto till kund med personnummer pNr. Returnerar -1 om
 	 * den inte skapades.
 	 * 
-	 * @param String pNr
+	 * @param String
+	 *            pNr
 	 * @return int
 	 */
 	public int createCreditAccount(String pNr) {
@@ -220,13 +221,13 @@ public class BankLogic {
 		}
 		return accountNumber;
 	}
-	
 
 	/**
 	 * Returnerar en String som innehåller presentation av kontot med kontonnummer
 	 * accountId som tillhör kunden pNr
 	 * 
-	 * @param String pNr, int account Id
+	 * @param String
+	 *            pNr, int account Id
 	 * @return String
 	 */
 	public String getAccount(String pNr, int accountId) {
@@ -248,7 +249,8 @@ public class BankLogic {
 	 * som gjorts på kontot, ex: [2017-01-30 09:17:06 -500.0 -500.0, 2017-01-30
 	 * 09:17:11 -4000.0 -4500.0]
 	 * 
-	 * @param String pNr, int accountId
+	 * @param String
+	 *            pNr, int accountId
 	 * @return ArrayList<String>
 	 */
 	public ArrayList<String> getTransactions(String pNr, int accountId) {
@@ -261,7 +263,7 @@ public class BankLogic {
 			account = customer.matchAccount(accountId);
 			results = account.getAccountTransactions();
 		} catch (NullPointerException e) {
-			account = null;
+			results = null;
 		}
 		return results;
 	}
