@@ -1,84 +1,94 @@
 package ananders6;
 
 /**
- * Denna klass tillhör en kund. SvaingsAccount innehar all data om ett konto.
+ * Denna klass tillhör en kund. Har sin egen ränta. Får inte bli mindre än
+ * -5000;
+ * 
  * @author Anna Andersson, ananders-6
  */
 
-public class CreditAccount {
+public class CreditAccount extends Account {
 
-  private double balance = 0.0;
-  private double interestRate = 1.0;
-  private String type = "Sparkonto";
-  private int accountNumber;
-  private static int lastAccountNumber = 1001;
-
+  private String type         = "Kreditkonto";
+  private double creditLimit  = -5000.0;
+  private double interestRate = 0.5;
 
   public CreditAccount() {
-    accountNumber = lastAccountNumber++;
   }
 
-  /** Lägger till amount i kontots saldo.
-  *
-  * @param double amount
-  * @return void
-  */
+  /**
+   * Efterssom det inte går att att lägga pengar i kredit konton så tas funktionen
+   * bort.
+   *
+   * @param double
+   *          amount
+   * @return void
+   */
+  @Override
   public void deposit(double amount) {
     this.balance += amount;
+    this.interestRate = (this.balance > 0.0) ? 0.5 : 7.0;
+    transaction = new Transaction(amount, this.balance);
+    TransactionList.add(transaction);
 
   }
-  /** Tar bort amount från kontot.
-  * Man kan inte ta bort mer än saldo.
-  * returnerar true om uttaget gick igenom.
-  * @param double amount
-  * @return boolean.
-  */
-  public boolean withdraw(double amount) {
-    double difference = balance - amount;
-    boolean result = false;
 
-    if (!(difference < 0.0)) {
-      this.balance = balance - amount;
+  /**
+   * Tar bort amount från kontot. Man kan inte ta bort mer än saldo. returnerar
+   * true om uttaget gick igenom.
+   * 
+   * @param double
+   *          amount
+   * @return boolean.
+   */
+  @Override
+  public boolean withdraw(double amount) {
+    boolean result = false;
+    if (creditLimit < (this.balance - Math.abs(amount))) {
+      this.balance = this.balance - Math.abs(amount);
       result = true;
+      this.interestRate = (this.balance > 0.0) ? 0.5 : 7.0;
+      transaction = new Transaction(amount * -1, this.balance);
+      TransactionList.add(transaction);
+    }
+
+    else if (balance < creditLimit) {
+      System.out.println("Credit card will overdrawn.");
+
     }
     return result;
   }
 
-  /** Returnerar kontots nummer
-  *
-  * @param void
-  * @return String
-  */
-  public int getAccountNumber() {
-    return accountNumber;
-
-  }
-  
-  /** Returnerar all information om kontot förutom räntan.s
-  *
-  * @param void
-  * @return String
-  */
-  public String getAccountInfo() {
-    return accountNumber + " " + balance + ' ' + type + ' ' + interestRate;
-
-  }
-
-  /** Beräknar kontots ränta.
-  *
-  * @param void
-  * @return double
-  */
+  /**
+   * Beräknar kontots ränta.
+   *
+   * @param void
+   * @return double
+   */
   public double calculateInterest() {
+    this.interestRate = (this.balance > 0.0) ? 0.5 : 7.0;
     return (this.balance * this.interestRate / 100.0);
 
   }
-  
-  /** Byter typen på kontot.
-  * Har ingen funktionell funktion.
-  * @param String newType
-  * @return void
-  */
+
+  /**
+   * Återger basal data om kontot.
+   *
+   * @param void
+   * @return String
+   */
+
+  public String getAccountInfo() {
+    return accountNumber + " " + balance + ' ' + type + ' ' + interestRate;
+  }
+
+  /**
+   * Byter namnet på kontotypen. Påverkar inte kontofunktionen.
+   *
+   * @param String
+   * @return void
+   */
+  @Override
   public void changeAccountType(String newType) {
     this.type = newType;
 
