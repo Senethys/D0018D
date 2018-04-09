@@ -255,13 +255,19 @@ public class BankLogic {
 	 */
 	public ArrayList<String> getTransactions(String pNr, int accountId) {
 		ArrayList<String> results = new ArrayList<String>();
+		ArrayList<Transaction> transactions = new ArrayList<Transaction>();
 		Account account;
 		Customer customer;
 
 		try {
 			customer = matchCustomer(pNr);
 			account = customer.matchAccount(accountId);
-			results = account.getAccountTransactions();
+			transactions = account.getAccountTransactions();
+			
+			for(Transaction transaction : transactions) {
+			  results.add(transaction.getTransacionDetails());
+			}
+			
 		} catch (NullPointerException e) {
 			results = null;
 		}

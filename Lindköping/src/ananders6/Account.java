@@ -9,9 +9,9 @@ import java.util.ArrayList;
  */
 
 public abstract class Account {
-	protected String pattern = "yyyy-MM-dd HH:mm:ss";
 	protected double balance = 0.0;
-	protected ArrayList<String> TransactionList = new ArrayList<String>();
+	protected ArrayList<Transaction> TransactionList = new ArrayList<Transaction>();
+	protected Transaction transaction; 
 	protected int accountNumber;
 	protected static int lastAccountNumber = 1001;
 
@@ -62,7 +62,7 @@ public abstract class Account {
 	 * @param void
 	 * @return String
 	 */
-	public ArrayList<String> getAccountTransactions() {
+	public ArrayList<Transaction> getAccountTransactions() {
 		return TransactionList;
 
 	}

@@ -1,7 +1,5 @@
 package ananders6;
 
-import java.util.Date;
-import java.text.SimpleDateFormat;
 
 /**
  * Denna klass tillhör en kund. SvaingsAccount innehar all data om ett konto.
@@ -28,12 +26,8 @@ public class SavingsAccount extends Account {
 	public void deposit(double amount) {
 		
 		this.balance += amount;
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-		String date = simpleDateFormat.format(new Date());
-		date = date + " " + amount + " " + this.balance;
-		TransactionList.add(date);
-
-
+    Transaction transaction = new Transaction(amount, this.balance);
+    TransactionList.add(transaction);
 	}
 
 	/**
@@ -65,10 +59,8 @@ public class SavingsAccount extends Account {
 
 		if (!(difference < 0.0)) {
 			this.balance = balance - withdrawAmount;
-			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-			String date = simpleDateFormat.format(new Date());
-			date = date + " " + withdrawAmount *-1 + " " + this.balance;
-			TransactionList.add(date);
+	    Transaction transaction = new Transaction(amount*-1, this.balance);
+	    TransactionList.add(transaction);
 			result = true;
 			if (this.usedFreeWithdraw == false) {
 				this.usedFreeWithdraw = true;
