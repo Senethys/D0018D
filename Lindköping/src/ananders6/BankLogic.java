@@ -190,26 +190,6 @@ public class BankLogic {
   }
   
   
-  
-  
-  /**Skapar ett unikt konto till kund med personnummer pNr. Returnerar -1 om den inte skapades.
-   * 
-   * @param String pNr
-   * @return int 
-   */
-  public int createCreditAccount(String pNr) {
-    Customer MatchedCustomerObject;
-    int accountNumber;
-
-    try {
-      MatchedCustomerObject = matchCustomer(pNr);
-      accountNumber = MatchedCustomerObject.addAccount();
-    }
-    catch (NullPointerException e) { 
-      return -1;
-    }
-    return accountNumber;  
-  }
 
   /**
    * Skapar ett unikt kreditkonto till kund med personnummer pNr. Returnerar -1 om
