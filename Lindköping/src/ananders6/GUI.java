@@ -10,7 +10,6 @@ import java.awt.event.ActionListener;
 
 public class GUI extends JFrame implements ActionListener {
 
-  
   private static final long serialVersionUID = 1L;
   private static final int  FRAME_WIDTH      = 300;
   private static final int  FRAME_HEIGHT     = 100;
@@ -20,12 +19,12 @@ public class GUI extends JFrame implements ActionListener {
   private JLabel            nameLabel        = new JLabel("Name: ");
   private JLabel            lastnameLabel    = new JLabel("Lastname: ");
   private JLabel            pNrLabel         = new JLabel("pNr: ");
+  private JTextField        nameField        = new JTextField(TEXT_WIDTH);
 
-  
-  
   public GUI() {
     createComponents();
     setSize(FRAME_WIDTH, FRAME_HEIGHT);
+    setLocationRelativeTo(null);
 
   }
 
@@ -34,12 +33,19 @@ public class GUI extends JFrame implements ActionListener {
     JPanel panel = new JPanel();
     panel.add(button);
     panel.add(label);
-    button.addActionListener(this);
-    this.add(panel);
-
-    JTextField nameField = new JTextField(TEXT_WIDTH);
     panel.add(nameField);
+    this.add(panel);
+   
 
+    ActionListener listener = new ClickListener();
+    button.addActionListener(listener);
+
+  }
+
+  public class ClickListener implements ActionListener {
+    public void actionPerformed(ActionEvent e) {
+      System.out.println("Du har klickat på knappen!");
+    }
   }
 
   @Override
@@ -51,4 +57,3 @@ public class GUI extends JFrame implements ActionListener {
     return;
   }
 }
-  
