@@ -342,4 +342,16 @@ public class BankLogic extends Observable {
     }
     return result;
   }
+  
+
+  
+  public String getNameForPersonAt(int position)
+  {
+    return (CustomerList.get(position)).getCustomerName();
+  }
+
+  public String getPhoneNrForPersonAt(int position)
+  {
+    return (CustomerList.get(position)).getpNr();
+  }
 }

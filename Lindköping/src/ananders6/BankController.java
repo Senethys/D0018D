@@ -18,9 +18,12 @@ public class BankController {
     theModel = new BankLogic();
     theModel.addObserver(theView); // Registers the model with the view
 
-    theView.addNewListeners(new AddNewCustomerListener());
-    //theView.addShowListeners(new ShowCustomerListener());
+    //Binds invidivdual buttons to functions
+    theView.addNewListeners(new addNewCustomerListener());
+    theView.creditListeners(new addNewCreditAccountListener());
+    theView.savingsListeners(new addNewSavingsAccountListener());
     theView.addClearListeners(new ClearFieldsListener());
+    theView.addShowListeners(new ShowCustomerListener());
 
   }
 
@@ -28,19 +31,42 @@ public class BankController {
     // Update the model
     theModel.createCustomer(theView.getName(), theView.getLastname(), theView.getpNr());
   }
+  
+  
+  private void createCreditAccount() {
 
-  private class AddNewCustomerListener implements ActionListener {
+    theModel.createCreditAccount(theView.getpNr());
+  }
+  
+  private void createSavingsAccount() {
+    
+    theModel.createSavingsAccount(theView.getpNr());
+  }
+
+  private class addNewCustomerListener implements ActionListener {
     public void actionPerformed(ActionEvent event) {
       addCustomer();
     }
   }
+  
+  private class addNewCreditAccountListener implements ActionListener {
+    public void actionPerformed(ActionEvent event) {
+      createCreditAccount();
+    }
+  }
+  
+  private class addNewSavingsAccountListener implements ActionListener {
+    public void actionPerformed(ActionEvent event) {
+      createSavingsAccount();
+    }
+  }
 
-//  private class ShowPersonListener implements ActionListener {
-//
-//    public void actionPerformed(ActionEvent event) {
-//      theView.showPerson(theModel);
-//    }
-//  }
+  private class ShowCustomerListener implements ActionListener {
+
+    public void actionPerformed(ActionEvent event) {
+      theView.showCustomer(theModel);
+    }
+  }
 
   private class ClearFieldsListener implements ActionListener {
 

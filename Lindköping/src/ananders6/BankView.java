@@ -13,20 +13,22 @@ import java.util.Observer;
  *
  */
 public class BankView extends JFrame implements Observer {
-  private static final long serialVersionUID    = 7207001945354636294L;
+  private static final long serialVersionUID           = 7207001945354636294L;
   private JList<Object>     CustomerList;
-  private JList<Object>     AccountList;
+  private JTable            AccountList;
   private JList<Object>     TransactionList;
   private JTextField        nameField;
   private JTextField        lastnameField;
   private JTextField        pNrField;
-  private JButton           newButton           = new JButton("Add Customer");
-  private JButton           showButton          = new JButton("Visa");
-  private JButton           clearButton         = new JButton("Rensa");
-  private JButton           createAccountButton = new JButton("Create Account");
-  private JButton           deleteAccountButton = new JButton("Delete Account");
-  private JButton           withdrawButton      = new JButton("Withdraw");
-  private JButton           depositButton       = new JButton("Deposit");
+  private JButton           newButton                  = new JButton("Add Customer");
+  private JButton           showButton                 = new JButton("Visa");
+  private JButton           clearButton                = new JButton("Rensa");
+  private JButton           createSavingsAccountButton = new JButton("Create Savings Account");
+  private JButton           createCreditAccountButton  = new JButton("Create Credit Account");
+  private JButton           deleteAccountButton        = new JButton("Delete Account");
+  private JButton           withdrawButton             = new JButton("Withdraw");
+  private JButton           depositButton              = new JButton("Deposit");
+  private JButton           addAccount                 = new JButton("Add Account");
 
   public BankView() {
     initiateInstanceVariables();
@@ -50,7 +52,7 @@ public class BankView extends JFrame implements Observer {
     CustomerList = new JList<Object>();
     CustomerList.setBorder(BorderFactory.createTitledBorder("Customer List"));
 
-    AccountList = new JList<Object>();
+    AccountList = new JTable();
     AccountList.setBorder(BorderFactory.createTitledBorder("Account List"));
 
     TransactionList = new JList<Object>();
@@ -76,14 +78,15 @@ public class BankView extends JFrame implements Observer {
     add(CustomerList);
 
     JPanel AccountPanel = new JPanel(new GridLayout(2, 2));
-    AccountPanel.add(createAccountButton);
+    AccountPanel.add(createCreditAccountButton);
+    AccountPanel.add(createSavingsAccountButton);
     AccountPanel.add(deleteAccountButton);
     AccountPanel.add(withdrawButton);
     AccountPanel.add(depositButton);
     add(AccountPanel);
     add(AccountList);
 
-    JPanel TransactiontPanel = new JPanel(new GridLayout(2, 2));
+    JTable TransactiontPanel = new JTable();
     add(TransactiontPanel);
     add(TransactionList);
 
@@ -126,27 +129,23 @@ public class BankView extends JFrame implements Observer {
     return CustomerList.getSelectedIndex();
   }
 
-  // public void showCustomer(BankLogic theModel)
-  // {
-  // // Get the index that is selected
-  // int position = getIndex();
-  //
-  // // Someone is selected
-  // if(position > -1)
-  // {
-  // // Retrieve the name and tells the view to show the name
-  // String text = theModel.getNameForPersonAt(position);
-  // nameField.setText(text);
-  // // Retrieve the phone number and tells the view to show the phone number
-  // text = theModel.getPhoneNrForPersonAt(position);
-  // phoneNrField.setText(text);
-  // }
-  // else
-  // {
-  // // Notify the view that no selection was made
-  // JOptionPane.showMessageDialog(null, "Du måste markera en person i listan!");
-  // }
-  // }
+  public void showCustomer(BankLogic theModel) {
+    // Get the index that is selected
+    int position = getIndex();
+
+    // Someone is selected
+    if (position > -1) {
+      // Retrieve the name and tells the view to show the name
+      String text = theModel.getNameForPersonAt(position);
+      nameField.setText(text);
+      // Retrieve the phone number and tells the view to show the phone number
+      text = theModel.getPhoneNrForPersonAt(position);
+      pNrField.setText(text);
+    } else {
+      // Notify the view that no selection was made
+      JOptionPane.showMessageDialog(null, "Du måste markera en person i listan!");
+    }
+  }
 
   /**
    * Clears the text fields
@@ -164,6 +163,14 @@ public class BankView extends JFrame implements Observer {
    */
   public void addNewListeners(ActionListener listenForButton) {
     newButton.addActionListener(listenForButton);
+  }
+  
+  public void creditListeners(ActionListener listenForButton) {
+    createCreditAccountButton.addActionListener(listenForButton);
+  }
+  
+  public void savingsListeners(ActionListener listenForButton) {
+    createSavingsAccountButton.addActionListener(listenForButton);
   }
 
   /**
