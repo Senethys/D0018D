@@ -6,11 +6,12 @@ import java.awt.*;
 
 
 //YOU NEED TO ADD A FIELD in the GUI FOR NAME, LASTNAME AND PNR
+
 public class GUImain extends JFrame implements ActionListener {
   private BankLogic  logic;
-  private JList      personList;
+  private JList      customerList;
   private JTextField nameField;
-  private JTextField phoneNrField;
+  private JTextField lastnameField;
 
   public static void main(String[] args) {
     GUImain frame = new GUImain();
@@ -27,10 +28,10 @@ public class GUImain extends JFrame implements ActionListener {
 
     nameField = new JTextField();
     nameField.setBorder(BorderFactory.createTitledBorder("Namn"));
-    phoneNrField = new JTextField();
-    phoneNrField.setBorder(BorderFactory.createTitledBorder("Telefonnummer"));
-    personList = new JList();
-    personList.setBorder(BorderFactory.createTitledBorder("Registrerade personer"));
+    lastnameField = new JTextField();
+    lastnameField.setBorder(BorderFactory.createTitledBorder("Telefonnummer"));
+    customerList = new JList();
+    customerList.setBorder(BorderFactory.createTitledBorder("Registrerade personer"));
   }
 
   private void buildFrame() {
@@ -40,19 +41,22 @@ public class GUImain extends JFrame implements ActionListener {
 
     JPanel leftPanel = new JPanel(new GridLayout(5, 1));
     leftPanel.add(nameField);
-    leftPanel.add(phoneNrField);
+    leftPanel.add(lastnameField);
+    
     JButton addButton = new JButton("Lägg till");
     addButton.addActionListener(this);
     leftPanel.add(addButton);
+    
     JButton showButton = new JButton("Visa");
     showButton.addActionListener(this);
     leftPanel.add(showButton);
+    
     JButton clearButton = new JButton("Rensa");
     clearButton.addActionListener(this);
     leftPanel.add(clearButton);
     add(leftPanel);
 
-    add(personList);
+    add(customerList);
 
     setDefaultCloseOperation(EXIT_ON_CLOSE);
   }
@@ -71,16 +75,16 @@ public class GUImain extends JFrame implements ActionListener {
   }
 
   private void add() {
-    logic.createCustomer(nameField.getText(), phoneNrField.getText());
-    personList.setListData(logic.getAllCustomers().toArray());
+    logic.createCustomer(nameField.getText(), lastnameField.getText());
+    customerList.setListData(logic.getAllCustomers().toArray());
     clear();
   }
 
   private void showSelected() {
-    int position = personList.getSelectedIndex();
+    int position = customerList.getSelectedIndex();
     if (position > -1) {
       nameField.setText(logic.getNameForPersonAt(position));
-      phoneNrField.setText(logic.getPhoneNrForPersonAt(position));
+      lastnameField.setText(logic.getPhoneNrForPersonAt(position));
     } else {
       JOptionPane.showMessageDialog(null, "Du måste markera en person i listan!");
     }
@@ -88,6 +92,6 @@ public class GUImain extends JFrame implements ActionListener {
 
   private void clear() {
     nameField.setText("");
-    phoneNrField.setText("");
+    lastnameField.setText("");
   }
 }
