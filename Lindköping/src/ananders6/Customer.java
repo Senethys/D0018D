@@ -172,7 +172,7 @@ public class Customer {
 	 * @param void
 	 * @return String
 	 */
-	public String getpNr() {
+	public String getCustomerpNr() {
 		return ssn;
 	}
 

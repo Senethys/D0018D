@@ -29,7 +29,7 @@ public class BankLogic extends Observable {
     Customer MatchedCustomerObject = null;
 
     for (int i = 0; i < CustomerList.size(); i++) {
-      matchedpNr = CustomerList.get(i).getpNr();
+      matchedpNr = CustomerList.get(i).getCustomerpNr();
       {
         if (matchedpNr.equals(pNr)) {
           MatchedCustomerObject = CustomerList.get(i);
@@ -73,7 +73,7 @@ public class BankLogic extends Observable {
     if (CustomerList.size() != 0) {
       // Scan after matching pNr
       for (int i = 0; i < CustomerList.size(); i++) {
-        if (pNr.equals(CustomerList.get(i).getpNr())) {
+        if (pNr.equals(CustomerList.get(i).getCustomerpNr())) {
           exists = true;
           break;
         }
@@ -350,8 +350,13 @@ public class BankLogic extends Observable {
     return (CustomerList.get(position)).getCustomerName();
   }
 
-  public String getPhoneNrForPersonAt(int position)
+  public String getLastNameForPersonAt(int position)
   {
-    return (CustomerList.get(position)).getpNr();
+    return (CustomerList.get(position)).getCustomerLastname();
+  }
+  
+  public String getpNrAt(int position)
+  {
+    return (CustomerList.get(position)).getCustomerpNr();
   }
 }
