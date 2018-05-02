@@ -20,8 +20,9 @@ public class GUImain extends JFrame implements ActionListener {
   private JTextField        pNrField;
   
 
-  private DefaultTableModel model;
-  private DefaultTableModel model1;
+  private DefaultTableModel model = new DefaultTableModel(0, 0);
+  private DefaultTableModel model1 = new DefaultTableModel(0, 0);
+  
   private JButton addButton                  = new JButton("Add Customer");
   private JButton showButton                 = new JButton("Show");
   private JButton clearButton                = new JButton("Rensa");
@@ -46,15 +47,15 @@ public class GUImain extends JFrame implements ActionListener {
     customerList = new JList<Object>();
     
     accountTable = new JTable();
-    DefaultTableModel model = new DefaultTableModel(0, 0);
+
     model.setColumnIdentifiers(accountColumns);
     accountTable.setModel(model);
     
     transactionTable = new JTable();
-    DefaultTableModel model1 = new DefaultTableModel(0, 0);
+
     model1.setColumnIdentifiers(transactionColumns);
     transactionTable.setModel(model1);
-
+    model.addRow(new String[] {"data", "data","data", "data"});
     
     nameField = new JTextField();
     lastnameField = new JTextField();
@@ -135,14 +136,14 @@ public class GUImain extends JFrame implements ActionListener {
     clear();
   }
 
-  private void createCreditAccount() {
-    this.logic.createCreditAccount(pNrField.getText());
-    this.model.addRow(new String[] {"data", "data","data", "data"});
+  public void createCreditAccount() {
+    logic.createCreditAccount(pNrField.getText());
+    model.addRow(new String[] {"data", "data","data", "data"});
   }
 
-  private void createSavingsAccount() {
-    this.logic.createSavingsAccount(pNrField.getText());
-    this.model.addRow(new String[] {"data", "data","data", "data"});
+  public void createSavingsAccount() {
+    logic.createSavingsAccount(pNrField.getText());
+    model.addRow(new String[] {"data", "data","data", "data"});
   }
 
   private void showSelected() {
@@ -152,7 +153,7 @@ public class GUImain extends JFrame implements ActionListener {
       lastnameField.setText(logic.getLastNameForPersonAt(position));
       pNrField.setText(logic.getpNrAt(position));
     } else {
-      JOptionPane.showMessageDialog(null, "Du måste markera en person i listan!");
+      JOptionPane.showMessageDialog(null, "You need a person in the list!");
     }
   }
 
