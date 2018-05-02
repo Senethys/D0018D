@@ -18,8 +18,10 @@ public class GUImain extends JFrame implements ActionListener {
   private JTextField        nameField;
   private JTextField        lastnameField;
   private JTextField        pNrField;
+  
 
   private DefaultTableModel model;
+  private DefaultTableModel model1;
   private JButton addButton                  = new JButton("Add Customer");
   private JButton showButton                 = new JButton("Show");
   private JButton clearButton                = new JButton("Rensa");
@@ -30,14 +32,9 @@ public class GUImain extends JFrame implements ActionListener {
   private JButton depositButton              = new JButton("Deposit");
 
   String[] accountColumns = { "ID", "Account Type", "Balance", "Interest" };
-
-  String data[][] = { { "101", "Amit", "670000" }, { "102", "Jai", "780000" }, { "101", "Sachin", "700000" } };
-
-  public static void main(String[] args) {
-    GUImain frame = new GUImain();
-    frame.setVisible(true);
-  }
-
+  String[] transactionColumns = { "Date", "Time", "Amount", "Balance" };
+  String testdata[][] = { { "101", "Amit", "670000" }, { "102", "Jai", "780000" }, { "101", "Sachin", "700000" } };
+  
   public GUImain() {
     initiateInstanceVariables();
     buildFrame();
@@ -46,14 +43,23 @@ public class GUImain extends JFrame implements ActionListener {
   private void initiateInstanceVariables() {
     logic = new BankLogic();
     
-    model = new DefaultTableModel();
-    accountTable = new JTable(model);
- 
+    customerList = new JList<Object>();
+    
+    accountTable = new JTable();
+    DefaultTableModel model = new DefaultTableModel(0, 0);
+    model.setColumnIdentifiers(accountColumns);
+    accountTable.setModel(model);
+    
     transactionTable = new JTable();
+    DefaultTableModel model1 = new DefaultTableModel(0, 0);
+    model1.setColumnIdentifiers(transactionColumns);
+    transactionTable.setModel(model1);
+
+    
     nameField = new JTextField();
     lastnameField = new JTextField();
     pNrField = new JTextField();
-    customerList = new JList<Object>();
+
 
     nameField.setBorder(BorderFactory.createTitledBorder("Name"));
     lastnameField.setBorder(BorderFactory.createTitledBorder("Lastname"));
@@ -86,18 +92,19 @@ public class GUImain extends JFrame implements ActionListener {
     createCreditAccountButton.addActionListener(this);
     deleteAccountButton.addActionListener(this);
 
-    // ACCOUNT TABLE
+//    // ACCOUNT TABLE
     accountTable.setCellSelectionEnabled(true);
     ListSelectionModel select = accountTable.getSelectionModel();
     select.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    // ACCOUNT TABLE
+//    // ACCOUNT TABLE
 
     add(bankpanel);
     add(customerList);
     add(new JScrollPane(accountTable), BorderLayout.CENTER);
-    add(transactionTable);
+    add(new JScrollPane(transactionTable), BorderLayout.CENTER);
 
     setDefaultCloseOperation(EXIT_ON_CLOSE);
+
   }
 
   // UI LOGIC. This activated the functions below.
@@ -115,6 +122,7 @@ public class GUImain extends JFrame implements ActionListener {
     }
     if (buttonText.equals("Create Savings Account")) {
       createSavingsAccount();
+
     }
     if (buttonText.equals("Create Credit Account")) {
       createCreditAccount();
@@ -128,15 +136,13 @@ public class GUImain extends JFrame implements ActionListener {
   }
 
   private void createCreditAccount() {
-    logic.createCreditAccount(pNrField.getText());
-    model.addRow(new Object[]{"Column 1", "Column 2", "Column 3"});
-
+    this.logic.createCreditAccount(pNrField.getText());
+    this.model.addRow(new String[] {"data", "data","data", "data"});
   }
 
   private void createSavingsAccount() {
-    logic.createSavingsAccount(pNrField.getText());
-    accountTable.setListData(logic.getAllCustomers().toArray());
-    clear();
+    this.logic.createSavingsAccount(pNrField.getText());
+    this.model.addRow(new String[] {"data", "data","data", "data"});
   }
 
   private void showSelected() {

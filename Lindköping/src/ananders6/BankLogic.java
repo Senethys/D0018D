@@ -1,7 +1,6 @@
 package ananders6;
 
 import java.util.ArrayList;
-import java.util.Observable;
 
 
 /**
@@ -10,7 +9,7 @@ import java.util.Observable;
  * @author Anna Andersson, ananders-6
  */
 
-public class BankLogic extends Observable {
+public class BankLogic {
 
   private ArrayList<Customer> CustomerList = new ArrayList<Customer>();
 
@@ -89,8 +88,7 @@ public class BankLogic extends Observable {
       CustomerList.add(NewCustomer);
       result = true;
     }
-    setChanged();
-    notifyObservers();
+
     return result;
   }
 
