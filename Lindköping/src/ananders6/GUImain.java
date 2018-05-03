@@ -156,9 +156,16 @@ public class GUImain extends JFrame implements ActionListener {
   public void createSavingsAccount() {
     int accountNumber;
     String AccountData;
-    int selected = customerList.getSelectedIndex();
-    accountNumber = logic.createSavingsAccount(pNrField.getText());
-    model.addRow(new String[] {"data", "data","data", "data"});
+    String selectedItems;
+    String pNr;
+    
+    selectedItems = customerList.getSelectedValue().toString();
+    List<String> items = Arrays.asList(selectedItems.split(" "));
+    pNr = items.get(2);
+    accountNumber = logic.createSavingsAccount(pNr);
+    AccountData = logic.getAccount(pNr, accountNumber);
+    List<String> AccounItems = Arrays.asList(AccountData.split(" "));
+    model.addRow(new String[] { AccounItems.get(0), AccounItems.get(1), AccounItems.get(2), AccounItems.get(3)});
   }
 
   private void showSelected() {
