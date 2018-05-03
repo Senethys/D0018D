@@ -2,7 +2,8 @@ package ananders6;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-
+import java.util.*;
+import java.util.List;
 import java.awt.event.*;
 import java.awt.*;
 
@@ -32,7 +33,7 @@ public class GUImain extends JFrame implements ActionListener {
   private JButton withdrawButton             = new JButton("Withdraw");
   private JButton depositButton              = new JButton("Deposit");
 
-  String[] accountColumns = { "ID", "Account Type", "Balance", "Interest" };
+  String[] accountColumns = { "ID", "Balance", "Account Type", "Interest" };
   String[] transactionColumns = { "Date", "Time", "Amount", "Balance" };
   String testdata[][] = { { "101", "Amit", "670000" }, { "102", "Jai", "780000" }, { "101", "Sachin", "700000" } };
   
@@ -55,7 +56,7 @@ public class GUImain extends JFrame implements ActionListener {
 
     model1.setColumnIdentifiers(transactionColumns);
     transactionTable.setModel(model1);
-    model.addRow(new String[] {"data", "data","data", "data"});
+
     
     nameField = new JTextField();
     lastnameField = new JTextField();
@@ -136,13 +137,27 @@ public class GUImain extends JFrame implements ActionListener {
     clear();
   }
 
-  public void createCreditAccount() {
-    logic.createCreditAccount(pNrField.getText());
-    model.addRow(new String[] {"data", "data","data", "data"});
+  //get targeted customer
+  public void createCreditAccount() { 
+    int accountNumber;
+    String AccountData;
+    String selectedItems;
+    String pNr;
+    
+    selectedItems = customerList.getSelectedValue().toString();
+    List<String> items = Arrays.asList(selectedItems.split(" "));
+    pNr = items.get(2);
+    accountNumber = logic.createCreditAccount(pNr);
+    AccountData = logic.getAccount(pNr, accountNumber);
+    List<String> AccounItems = Arrays.asList(AccountData.split(" "));
+    model.addRow(new String[] { AccounItems.get(0), AccounItems.get(1), AccounItems.get(2), AccounItems.get(3)});
   }
 
   public void createSavingsAccount() {
-    logic.createSavingsAccount(pNrField.getText());
+    int accountNumber;
+    String AccountData;
+    int selected = customerList.getSelectedIndex();
+    accountNumber = logic.createSavingsAccount(pNrField.getText());
     model.addRow(new String[] {"data", "data","data", "data"});
   }
 
