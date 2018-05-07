@@ -19,11 +19,10 @@ public class GUImain extends JFrame implements ActionListener {
   private JTextField        nameField;
   private JTextField        lastnameField;
   private JTextField        pNrField;
-  
 
-  private DefaultTableModel model = new DefaultTableModel(0, 0);
+  private DefaultTableModel model  = new DefaultTableModel(0, 0);
   private DefaultTableModel model1 = new DefaultTableModel(0, 0);
-  
+
   private JButton addButton                  = new JButton("Add Customer");
   private JButton showButton                 = new JButton("Show");
   private JButton clearButton                = new JButton("Rensa");
@@ -33,10 +32,11 @@ public class GUImain extends JFrame implements ActionListener {
   private JButton withdrawButton             = new JButton("Withdraw");
   private JButton depositButton              = new JButton("Deposit");
 
-  String[] accountColumns = { "ID", "Balance", "Account Type", "Interest" };
+  String[] accountColumns     = { "ID", "Balance", "Account Type", "Interest" };
   String[] transactionColumns = { "Date", "Time", "Amount", "Balance" };
-  String testdata[][] = { { "101", "Amit", "670000" }, { "102", "Jai", "780000" }, { "101", "Sachin", "700000" } };
-  
+  String   testdata[][]       = { { "101", "Amit", "670000" }, { "102", "Jai", "780000" },
+      { "101", "Sachin", "700000" } };
+
   public GUImain() {
     initiateInstanceVariables();
     buildFrame();
@@ -44,24 +44,30 @@ public class GUImain extends JFrame implements ActionListener {
 
   private void initiateInstanceVariables() {
     logic = new BankLogic();
-    
+
     customerList = new JList<Object>();
-    
-    accountTable = new JTable();
+
+    accountTable = new JTable() {
+      public boolean isCellEditable(int row, int column) {
+        return false;
+      }
+    };
 
     model.setColumnIdentifiers(accountColumns);
     accountTable.setModel(model);
-    
-    transactionTable = new JTable();
+
+    transactionTable = new JTable() {
+      public boolean isCellEditable(int row, int column) {
+        return false;
+      }
+    };
 
     model1.setColumnIdentifiers(transactionColumns);
     transactionTable.setModel(model1);
 
-    
     nameField = new JTextField();
     lastnameField = new JTextField();
     pNrField = new JTextField();
-
 
     nameField.setBorder(BorderFactory.createTitledBorder("Name"));
     lastnameField.setBorder(BorderFactory.createTitledBorder("Lastname"));
@@ -83,9 +89,13 @@ public class GUImain extends JFrame implements ActionListener {
     bankpanel.add(clearButton);
     bankpanel.add(createSavingsAccountButton);
     bankpanel.add(createCreditAccountButton);
+    bankpanel.add(withdrawButton);
+    bankpanel.add(depositButton);
 
     createSavingsAccountButton.setVisible(false);
     createCreditAccountButton.setVisible(false);
+    depositButton.setVisible(false);
+    withdrawButton.setVisible(false);
 
     addButton.addActionListener(this);
     showButton.addActionListener(this);
@@ -93,12 +103,12 @@ public class GUImain extends JFrame implements ActionListener {
     createSavingsAccountButton.addActionListener(this);
     createCreditAccountButton.addActionListener(this);
     deleteAccountButton.addActionListener(this);
+    depositButton.addActionListener(this);
+    withdrawButton.addActionListener(this);
 
-//    // ACCOUNT TABLE
-    accountTable.setCellSelectionEnabled(true);
+    // accountTable.setCellSelectionEnabled(true);
     ListSelectionModel select = accountTable.getSelectionModel();
-    select.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-//    // ACCOUNT TABLE
+    select.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
     add(bankpanel);
     add(customerList);
@@ -124,10 +134,18 @@ public class GUImain extends JFrame implements ActionListener {
     }
     if (buttonText.equals("Create Savings Account")) {
       createSavingsAccount();
+      showTransactionButtons();
 
     }
     if (buttonText.equals("Create Credit Account")) {
       createCreditAccount();
+      showTransactionButtons();
+    }
+    if (buttonText.equals("Withdraw")) {
+      withdraw();
+    }
+    if (buttonText.equals("Deposit")) {
+      deposit();
     }
   }
 
@@ -137,20 +155,20 @@ public class GUImain extends JFrame implements ActionListener {
     clear();
   }
 
-  //get targeted customer
-  public void createCreditAccount() { 
+  // get targeted customer
+  public void createCreditAccount() {
     int accountNumber;
     String AccountData;
     String selectedItems;
     String pNr;
-    
+
     selectedItems = customerList.getSelectedValue().toString();
     List<String> items = Arrays.asList(selectedItems.split(" "));
     pNr = items.get(2);
     accountNumber = logic.createCreditAccount(pNr);
     AccountData = logic.getAccount(pNr, accountNumber);
     List<String> AccounItems = Arrays.asList(AccountData.split(" "));
-    model.addRow(new String[] { AccounItems.get(0), AccounItems.get(1), AccounItems.get(2), AccounItems.get(3)});
+    model.addRow(new String[] { AccounItems.get(0), AccounItems.get(1), AccounItems.get(2), AccounItems.get(3) });
   }
 
   public void createSavingsAccount() {
@@ -158,14 +176,56 @@ public class GUImain extends JFrame implements ActionListener {
     String AccountData;
     String selectedItems;
     String pNr;
-    
+
     selectedItems = customerList.getSelectedValue().toString();
     List<String> items = Arrays.asList(selectedItems.split(" "));
     pNr = items.get(2);
     accountNumber = logic.createSavingsAccount(pNr);
     AccountData = logic.getAccount(pNr, accountNumber);
     List<String> AccounItems = Arrays.asList(AccountData.split(" "));
-    model.addRow(new String[] { AccounItems.get(0), AccounItems.get(1), AccounItems.get(2), AccounItems.get(3)});
+    model.addRow(new String[] { AccounItems.get(0), AccounItems.get(1), AccounItems.get(2), AccounItems.get(3) });
+  }
+
+  public void withdraw() {
+    int accountNumber;
+    String AccountData;
+    String selectedItems;
+    String pNr;
+
+    selectedItems = (String) accountTable.getValueAt(accountTable.getSelectedRow(), accountTable.getSelectedColumn());
+    System.out.println(selectedItems);
+    List<String> items = Arrays.asList(selectedItems.split(" "));
+    System.out.println(items);
+    pNr = items.get(0);
+    accountNumber = logic.createSavingsAccount(pNr);
+    AccountData = logic.getAccount(pNr, accountNumber);
+    List<String> AccounItems = Arrays.asList(AccountData.split(" "));
+    model.addRow(new String[] { AccounItems.get(0), AccounItems.get(1), AccounItems.get(2), AccounItems.get(3) });
+  }
+
+  public void deposit() {
+    moneyClass m = new moneyClass();
+    m.setVisible(true);
+    
+    int accountNumber;
+    String AccountData;
+    String selectedItems;
+    String pNr;
+    ArrayList<String> items = new ArrayList<String>();
+
+    for (int count = 0; count < accountTable.getColumnCount(); count++) {
+      selectedItems = accountTable.getValueAt(accountTable.getSelectedRow(), count).toString();
+      System.out.println("Items selected: " + selectedItems);
+      items.add(selectedItems);
+      System.out.println("Items: " + items);
+
+    }
+
+    // accountNumber = logic.createSavingsAccount(pNr);
+    // AccountData = logic.getAccount(pNr, accountNumber);
+    // List<String> AccounItems = Arrays.asList(AccountData.split(" "));
+    // model.addRow(new String[] { AccounItems.get(0), AccounItems.get(1),
+    // AccounItems.get(2), AccounItems.get(3)});
   }
 
   private void showSelected() {
@@ -182,6 +242,11 @@ public class GUImain extends JFrame implements ActionListener {
   private void showAccountButtons() {
     createSavingsAccountButton.setVisible(true);
     createCreditAccountButton.setVisible(true);
+  }
+
+  private void showTransactionButtons() {
+    depositButton.setVisible(true);
+    withdrawButton.setVisible(true);
   }
 
   private void clear() {
