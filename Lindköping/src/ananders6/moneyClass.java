@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -12,8 +13,11 @@ import javax.swing.JTextField;
 public class moneyClass extends JFrame implements ActionListener {
 
   private static final long serialVersionUID = 1L;
-  JPanel                    moneyPanel;
-  JTextField                moneyField;
+  private JPanel            moneyPanel;
+  private JTextField        moneyField;
+  private JButton           transferButton   = new JButton("Transfer Money");
+  private String            buttonText;
+  protected int             amountInt;
 
   public moneyClass() {
     initiateVariables();
@@ -36,20 +40,9 @@ public class moneyClass extends JFrame implements ActionListener {
   public void actionPerformed(ActionEvent event) {
     String buttonText = event.getActionCommand();
     String amount;
-    if (buttonText.equals("Deposit")) {
+    if (buttonText.equals("Transfer Money")) {
       amount = moneyField.getText();
-      deposit();
+      amountInt = Integer.parseInt(amount);
     }
   }
-
-  public void deposit() {
-    String buttonText = moneyField.getText();
-    if (buttonText.equals("Deposit")) {
-      deposit();
-  
-  
-  
-}
-  }
-  
 }

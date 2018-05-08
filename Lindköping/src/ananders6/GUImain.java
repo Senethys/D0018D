@@ -141,11 +141,8 @@ public class GUImain extends JFrame implements ActionListener {
       createCreditAccount();
       showTransactionButtons();
     }
-    if (buttonText.equals("Withdraw")) {
+    if (buttonText.equals("Transfer Money")) {
       withdraw();
-    }
-    if (buttonText.equals("Deposit")) {
-      deposit();
     }
   }
 
