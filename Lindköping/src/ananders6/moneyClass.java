@@ -15,9 +15,11 @@ public class moneyClass extends JFrame implements ActionListener {
   private static final long serialVersionUID = 1L;
   private JPanel            moneyPanel;
   private JTextField        moneyField;
-  private JButton           transferButton   = new JButton("Transfer Money");
+  private JButton           withdrawButton   = new JButton("Withdraw");
+  private JButton           depositButton   = new JButton("Deposit");
   private String            buttonText;
-  protected int             amountInt;
+  protected double             withdrawAmount = 0;
+  protected double             depositAmount = 0;
 
   public moneyClass() {
     initiateVariables();
@@ -28,11 +30,13 @@ public class moneyClass extends JFrame implements ActionListener {
     setTitle("Money to transfer");
     setSize(300, 300);
     setLayout(new GridLayout(1, 2));
-    JPanel moneyPanel = new JPanel(new GridLayout(5, 1));
+    JPanel moneyPanel = new JPanel(new GridLayout());
     JTextField moneyField = new JTextField();
     moneyPanel.add(moneyField);
-    moneyField.setBorder(BorderFactory.createTitledBorder("Amount to deposit"));
+    moneyField.setBorder(BorderFactory.createTitledBorder("Amount to Transfer"));
     add(moneyPanel);
+    add(withdrawButton);
+    add(depositButton);
     setDefaultCloseOperation(EXIT_ON_CLOSE);
   }
 
@@ -40,9 +44,16 @@ public class moneyClass extends JFrame implements ActionListener {
   public void actionPerformed(ActionEvent event) {
     String buttonText = event.getActionCommand();
     String amount;
-    if (buttonText.equals("Transfer Money")) {
+    if (buttonText.equals("Withdraw")) {
       amount = moneyField.getText();
-      amountInt = Integer.parseInt(amount);
+      withdrawAmount = Double.parseDouble(amount);
+      super.dispose();
+      
+    }
+    if (buttonText.equals("Deposit")) {
+      amount = moneyField.getText();
+      depositAmount = Double.parseDouble(amount);
+     
     }
   }
 }

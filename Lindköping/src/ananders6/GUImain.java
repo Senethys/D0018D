@@ -29,8 +29,8 @@ public class GUImain extends JFrame implements ActionListener {
   private JButton createSavingsAccountButton = new JButton("Create Savings Account");
   private JButton createCreditAccountButton  = new JButton("Create Credit Account");
   private JButton deleteAccountButton        = new JButton("Delete Account");
-  private JButton withdrawButton             = new JButton("Withdraw");
-  private JButton depositButton              = new JButton("Deposit");
+  private JButton transferButton             = new JButton("Transfer Money");
+
 
   String[] accountColumns     = { "ID", "Balance", "Account Type", "Interest" };
   String[] transactionColumns = { "Date", "Time", "Amount", "Balance" };
@@ -89,13 +89,12 @@ public class GUImain extends JFrame implements ActionListener {
     bankpanel.add(clearButton);
     bankpanel.add(createSavingsAccountButton);
     bankpanel.add(createCreditAccountButton);
-    bankpanel.add(withdrawButton);
-    bankpanel.add(depositButton);
+    bankpanel.add(transferButton);
+  
 
     createSavingsAccountButton.setVisible(false);
     createCreditAccountButton.setVisible(false);
-    depositButton.setVisible(false);
-    withdrawButton.setVisible(false);
+    transferButton.setVisible(false);
 
     addButton.addActionListener(this);
     showButton.addActionListener(this);
@@ -103,8 +102,7 @@ public class GUImain extends JFrame implements ActionListener {
     createSavingsAccountButton.addActionListener(this);
     createCreditAccountButton.addActionListener(this);
     deleteAccountButton.addActionListener(this);
-    depositButton.addActionListener(this);
-    withdrawButton.addActionListener(this);
+    transferButton.addActionListener(this);
 
     // accountTable.setCellSelectionEnabled(true);
     ListSelectionModel select = accountTable.getSelectionModel();
@@ -142,7 +140,7 @@ public class GUImain extends JFrame implements ActionListener {
       showTransactionButtons();
     }
     if (buttonText.equals("Transfer Money")) {
-      withdraw();
+      transfer();
     }
   }
 
@@ -183,26 +181,15 @@ public class GUImain extends JFrame implements ActionListener {
     model.addRow(new String[] { AccounItems.get(0), AccounItems.get(1), AccounItems.get(2), AccounItems.get(3) });
   }
 
-  public void withdraw() {
-    int accountNumber;
-    String AccountData;
-    String selectedItems;
-    String pNr;
 
-    selectedItems = (String) accountTable.getValueAt(accountTable.getSelectedRow(), accountTable.getSelectedColumn());
-    System.out.println(selectedItems);
-    List<String> items = Arrays.asList(selectedItems.split(" "));
-    System.out.println(items);
-    pNr = items.get(0);
-    accountNumber = logic.createSavingsAccount(pNr);
-    AccountData = logic.getAccount(pNr, accountNumber);
-    List<String> AccounItems = Arrays.asList(AccountData.split(" "));
-    model.addRow(new String[] { AccounItems.get(0), AccounItems.get(1), AccounItems.get(2), AccounItems.get(3) });
-  }
-
-  public void deposit() {
+  public void transfer() {
     moneyClass m = new moneyClass();
+    double moneyToTransfer;
     m.setVisible(true);
+    if(m.withdrawAmount >= 0) {
+     moneyToTransfer =  m.withdrawAmount;
+    }
+   
     
     int accountNumber;
     String AccountData;
@@ -242,8 +229,7 @@ public class GUImain extends JFrame implements ActionListener {
   }
 
   private void showTransactionButtons() {
-    depositButton.setVisible(true);
-    withdrawButton.setVisible(true);
+    transferButton.setVisible(true);
   }
 
   private void clear() {
