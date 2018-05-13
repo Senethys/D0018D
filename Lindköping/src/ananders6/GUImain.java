@@ -186,9 +186,12 @@ public class GUImain extends JFrame implements ActionListener {
     moneyClass m = new moneyClass();
     double moneyToTransfer;
     m.setVisible(true);
-    if(m.withdrawAmount >= 0) {
+    
+    if(m.withdrawAmount > 0) {
      moneyToTransfer =  m.withdrawAmount;
+     logic.getAccount(pNr, accountId);
     }
+    
    
     
     int accountNumber;
