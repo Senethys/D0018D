@@ -10,7 +10,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class moneyClass extends JFrame implements ActionListener {
+public class MoneyClass extends JFrame implements ActionListener {
 
   private static final long serialVersionUID = 1L;
   private JPanel            moneyPanel;
@@ -21,7 +21,7 @@ public class moneyClass extends JFrame implements ActionListener {
   protected double             withdrawAmount = 0;
   protected double             depositAmount = 0;
 
-  public moneyClass() {
+  public MoneyClass() {
     initiateVariables();
 
   }

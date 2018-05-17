@@ -5,13 +5,15 @@ import javax.swing.table.DefaultTableModel;
 import java.util.*;
 import java.util.List;
 import java.awt.event.*;
-import java.awt.*;
+import java.awt.*;	
+import javax.swing.table.*;
 
 //YOU NEED TO ADD A FIELD in the GUI FOR NAME, LASTNAME AND PNR
 
 public class GUImain extends JFrame implements ActionListener {
 
   private static final long serialVersionUID = 1L;
+private static MouseListener MouseListener;
   private BankLogic         logic;
   private JList<Object>     customerList;
   private JTable            accountTable;
@@ -103,6 +105,7 @@ public class GUImain extends JFrame implements ActionListener {
     createCreditAccountButton.addActionListener(this);
     deleteAccountButton.addActionListener(this);
     transferButton.addActionListener(this);
+   
 
     // accountTable.setCellSelectionEnabled(true);
     ListSelectionModel select = accountTable.getSelectionModel();
@@ -142,6 +145,12 @@ public class GUImain extends JFrame implements ActionListener {
     if (buttonText.equals("Transfer Money")) {
       transfer();
     }
+    
+    if(customerList.getSelectedValue() != null) {
+    	String selectedCustomer = customerList.getSelectedValue().toString();
+    	System.out.println(selectedCustomer);
+    }	
+    
   }
 
   private void addCustomer() {
@@ -183,7 +192,7 @@ public class GUImain extends JFrame implements ActionListener {
 
 
   public void transfer() {
-    moneyClass m = new moneyClass();
+    MoneyClass m = new MoneyClass();
     double moneyToTransfer;
     m.setVisible(true);
     
