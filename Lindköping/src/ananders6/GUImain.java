@@ -189,7 +189,7 @@ public class GUImain extends JFrame implements ActionListener {
     
     if(m.withdrawAmount > 0) {
      moneyToTransfer =  m.withdrawAmount;
-     logic.getAccount(pNr, accountId);
+     //logic.getAccount(pNr, accountId);
     }
     
    
