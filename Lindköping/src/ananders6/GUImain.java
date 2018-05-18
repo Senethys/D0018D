@@ -1,6 +1,7 @@
 package ananders6;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.util.*;
 import java.util.List;
@@ -13,7 +14,6 @@ import javax.swing.table.*;
 public class GUImain extends JFrame implements ActionListener {
 
   private static final long serialVersionUID = 1L;
-private static MouseListener MouseListener;
   private BankLogic         logic;
   private JList<Object>     customerList;
   private JTable            accountTable;
@@ -21,10 +21,14 @@ private static MouseListener MouseListener;
   private JTextField        nameField;
   private JTextField        lastnameField;
   private JTextField        pNrField;
+  
+  MouseListener mouseListener;
+  
+  private DefaultTableModel accountModel  = new DefaultTableModel(0, 0);
+  private DefaultTableModel transactionModel = new DefaultTableModel(0, 0);
+  private DefaultListModel<Object> CustomerModel = new DefaultListModel<>();
 
-  private DefaultTableModel model  = new DefaultTableModel(0, 0);
-  private DefaultTableModel model1 = new DefaultTableModel(0, 0);
-
+  
   private JButton addButton                  = new JButton("Add Customer");
   private JButton showButton                 = new JButton("Show");
   private JButton clearButton                = new JButton("Rensa");
@@ -45,27 +49,33 @@ private static MouseListener MouseListener;
   }
 
   private void initiateInstanceVariables() {
+    //BANK LOGIC
     logic = new BankLogic();
 
+    //CUSTOMERS
     customerList = new JList<Object>();
+    customerList.setModel(CustomerModel);
 
+    
+    //ACOUNTS
     accountTable = new JTable() {
       public boolean isCellEditable(int row, int column) {
         return false;
       }
     };
 
-    model.setColumnIdentifiers(accountColumns);
-    accountTable.setModel(model);
+    accountModel.setColumnIdentifiers(accountColumns);
+    accountTable.setModel(accountModel);
 
+    //TRANSACTIONS
     transactionTable = new JTable() {
       public boolean isCellEditable(int row, int column) {
         return false;
       }
     };
 
-    model1.setColumnIdentifiers(transactionColumns);
-    transactionTable.setModel(model1);
+    transactionModel.setColumnIdentifiers(transactionColumns);
+    transactionTable.setModel(transactionModel);
 
     nameField = new JTextField();
     lastnameField = new JTextField();
@@ -105,9 +115,9 @@ private static MouseListener MouseListener;
     createCreditAccountButton.addActionListener(this);
     deleteAccountButton.addActionListener(this);
     transferButton.addActionListener(this);
+    
+    customerList.getSelectionModel().addListSelectionListener(accountTable);
    
-
-    // accountTable.setCellSelectionEnabled(true);
     ListSelectionModel select = accountTable.getSelectionModel();
     select.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
@@ -130,6 +140,13 @@ private static MouseListener MouseListener;
     if (buttonText.equals("Show")) {
       showSelected();
     }
+    
+    
+    if (buttonText.equals("Show") && customerList.getSelectedValue() != null) {
+      showAccounts();
+    }
+    
+    
     if (buttonText.equals("Clear")) {
       clear();
     }
@@ -145,13 +162,33 @@ private static MouseListener MouseListener;
     if (buttonText.equals("Transfer Money")) {
       transfer();
     }
-    
-    if(customerList.getSelectedValue() != null) {
-    	String selectedCustomer = customerList.getSelectedValue().toString();
-    	System.out.println(selectedCustomer);
-    }	
-    
   }
+    
+    public void showAccounts() {
+      
+      while(accountModel.getRowCount() != 0) {
+        accountModel.removeRow(0);
+      }
+      
+      String selectedCustomerpNr = customerList.getSelectedValue().toString().split(" ")[2];
+      Customer customer = logic.matchCustomer(selectedCustomerpNr);
+      
+      
+    ArrayList<String> accounts = customer.getAllCustomerAccountInfo();
+
+
+    for(int i = accounts.size(); 0 < i; i--) {
+      String testa = accounts.get(i - 1);
+      String[] testb = testa.split(" "); 
+      int accountNumber = Integer.parseInt(testb[0]);
+      String accountData = logic.getAccount(selectedCustomerpNr, accountNumber);
+      List<String> AccounItems = Arrays.asList(accountData.split(" "));
+      accountModel.addRow(new String[] { AccounItems.get(0), AccounItems.get(1), AccounItems.get(2), AccounItems.get(3) });
+    }
+    }
+   
+          
+
 
   private void addCustomer() {
     logic.createCustomer(nameField.getText(), lastnameField.getText(), pNrField.getText());
@@ -172,7 +209,7 @@ private static MouseListener MouseListener;
     accountNumber = logic.createCreditAccount(pNr);
     AccountData = logic.getAccount(pNr, accountNumber);
     List<String> AccounItems = Arrays.asList(AccountData.split(" "));
-    model.addRow(new String[] { AccounItems.get(0), AccounItems.get(1), AccounItems.get(2), AccounItems.get(3) });
+    accountModel.addRow(new String[] { AccounItems.get(0), AccounItems.get(1), AccounItems.get(2), AccounItems.get(3) });
   }
 
   public void createSavingsAccount() {
@@ -187,7 +224,7 @@ private static MouseListener MouseListener;
     accountNumber = logic.createSavingsAccount(pNr);
     AccountData = logic.getAccount(pNr, accountNumber);
     List<String> AccounItems = Arrays.asList(AccountData.split(" "));
-    model.addRow(new String[] { AccounItems.get(0), AccounItems.get(1), AccounItems.get(2), AccounItems.get(3) });
+    accountModel.addRow(new String[] { AccounItems.get(0), AccounItems.get(1), AccounItems.get(2), AccounItems.get(3) });
   }
 
 

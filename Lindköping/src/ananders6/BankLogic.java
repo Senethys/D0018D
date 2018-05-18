@@ -22,7 +22,7 @@ public class BankLogic {
    * @param Personnummer.
    * @return Customer object.
    */
-  private Customer matchCustomer(String pNr) {
+  public Customer matchCustomer(String pNr) {
 
     String matchedpNr;
     Customer MatchedCustomerObject = null;
