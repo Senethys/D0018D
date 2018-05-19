@@ -28,7 +28,7 @@ public class GUImain extends JFrame implements ActionListener {
   private DefaultTableModel transactionModel = new DefaultTableModel(0, 0);
   private DefaultListModel<Object> CustomerModel = new DefaultListModel<>();
 
-  
+  private JButton editCustomerButton         = new JButton("Edit Customer Details");
   private JButton addButton                  = new JButton("Add Customer");
   private JButton showButton                 = new JButton("Show");
   private JButton clearButton                = new JButton("Rensa");
@@ -98,6 +98,7 @@ public class GUImain extends JFrame implements ActionListener {
     bankpanel.add(pNrField);
     bankpanel.add(addButton);
     bankpanel.add(showButton);
+    bankpanel.add(editCustomerButton);
     bankpanel.add(clearButton);
     bankpanel.add(createSavingsAccountButton);
     bankpanel.add(createCreditAccountButton);
@@ -145,8 +146,7 @@ public class GUImain extends JFrame implements ActionListener {
     if (buttonText.equals("Show") && customerList.getSelectedValue() != null) {
       showAccounts();
     }
-    
-    
+  
     if (buttonText.equals("Clear")) {
       clear();
     }
@@ -198,6 +198,7 @@ public class GUImain extends JFrame implements ActionListener {
 
   // get targeted customer
   public void createCreditAccount() {
+    showAccounts();
     int accountNumber;
     String AccountData;
     String selectedItems;
@@ -213,11 +214,12 @@ public class GUImain extends JFrame implements ActionListener {
   }
 
   public void createSavingsAccount() {
+    showAccounts();
     int accountNumber;
     String AccountData;
     String selectedItems;
     String pNr;
-
+    
     selectedItems = customerList.getSelectedValue().toString();
     List<String> items = Arrays.asList(selectedItems.split(" "));
     pNr = items.get(2);
@@ -229,30 +231,55 @@ public class GUImain extends JFrame implements ActionListener {
 
 
   public void transfer() {
-    MoneyClass m = new MoneyClass();
-    double moneyToTransfer;
-    m.setVisible(true);
-    
-    if(m.withdrawAmount > 0) {
-     moneyToTransfer =  m.withdrawAmount;
-     //logic.getAccount(pNr, accountId);
-    }
-    
-   
-    
-    int accountNumber;
+    int accountNumber = 0;
+    int accountNumberIndex;
     String AccountData;
     String selectedItems;
     String pNr;
-    ArrayList<String> items = new ArrayList<String>();
+    double moneyToTransfer;
+    MoneyClass m;
+    
+    //Get Customer data from the table
+    selectedItems = customerList.getSelectedValue().toString();
+    //Convert to list.
+    List<String> items = Arrays.asList(selectedItems.split(" "));
+    //Get personla nunmber in order to get account.
+    pNr = items.get(2);
+    //Get account ID from Jtable
+    accountNumberIndex = accountTable.getSelectedRow();
+    Object data = accountModel.getValueAt(accountNumberIndex, 0);
+    accountNumber = Integer.parseInt(data.toString());
+    AccountData = logic.getAccount(pNr, accountNumber);
+    List<String> AccounItems = Arrays.asList(AccountData.split(" "));
+    System.out.println(pNr);
+    System.out.println(accountNumberIndex);
+    System.out.println(accountNumber);
+    System.out.println(AccountData);
 
-    for (int count = 0; count < accountTable.getColumnCount(); count++) {
-      selectedItems = accountTable.getValueAt(accountTable.getSelectedRow(), count).toString();
-      System.out.println("Items selected: " + selectedItems);
-      items.add(selectedItems);
-      System.out.println("Items: " + items);
-
-    }
+  
+//    m = new MoneyClass();
+//    m.setVisible(true);
+//    
+//    if(m.withdrawAmount > 0) {
+//     moneyToTransfer =  m.withdrawAmount;
+//     logic.getAccount(pNr, accountId);
+//    }
+    
+   
+    
+//    int accountNumber;
+//    String AccountData;
+//    String selectedItems;
+//    String pNr;
+//    ArrayList<String> items = new ArrayList<String>();
+//
+//    for (int count = 0; count < accountTable.getColumnCount(); count++) {
+//      selectedItems = accountTable.getValueAt(accountTable.getSelectedRow(), count).toString();
+//      System.out.println("Items selected: " + selectedItems);
+//      items.add(selectedItems);
+//      System.out.println("Items: " + items);
+//
+//    }
 
     // accountNumber = logic.createSavingsAccount(pNr);
     // AccountData = logic.getAccount(pNr, accountNumber);
