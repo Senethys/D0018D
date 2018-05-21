@@ -23,8 +23,10 @@ public class MoneyClass extends JFrame implements ActionListener {
   protected double          withdrawAmount   = 0;
   protected double          depositAmount    = 0;
   DefaultTableModel         transactionModel;
+  DefaultTableModel         accountModel;
 
-  public MoneyClass(Account account, DefaultTableModel transactionModel) {
+  public MoneyClass(Account account, DefaultTableModel transactionModel, DefaultTableModel accountModel) {
+    this.accountModel = accountModel;
     this.transactionModel = transactionModel;
     this.account = account;
     initiateVariables();
@@ -55,7 +57,7 @@ public class MoneyClass extends JFrame implements ActionListener {
       amount = moneyField.getText();
       withdrawAmount = Double.parseDouble(amount);
       account.withdraw(withdrawAmount);
-      updateTransactionTable();
+      updateTables();
       this.setVisible(false);
       dispose();
 
@@ -64,7 +66,7 @@ public class MoneyClass extends JFrame implements ActionListener {
       amount = moneyField.getText();
       depositAmount = Double.parseDouble(amount);
       account.deposit(depositAmount);
-      updateTransactionTable();
+      updateTables();
       this.setVisible(false);
       dispose();
 
@@ -72,7 +74,7 @@ public class MoneyClass extends JFrame implements ActionListener {
 
   }
 
-  public void updateTransactionTable() {
+  public void updateTables() {
     ArrayList<Transaction> transactions = account.getAccountTransactions();
     for (Transaction t : transactions) {
       String[] transactionDetails = t.getTransacionDetails().split(" ");

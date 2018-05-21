@@ -24,7 +24,7 @@ public class GUImain extends JFrame implements ActionListener {
 
   private DefaultTableModel        accountModel     = new DefaultTableModel(0, 0);
   private DefaultTableModel        transactionModel = new DefaultTableModel(0, 0);
-  private DefaultListModel<Object> CustomerModel    = new DefaultListModel<>();
+  private DefaultListModel<Object> customerModel    = new DefaultListModel<>();
 
   private JButton editCustomerButton         = new JButton("Edit Customer Details");
   private JButton addButton                  = new JButton("Add Customer");
@@ -32,8 +32,7 @@ public class GUImain extends JFrame implements ActionListener {
   private JButton clearButton                = new JButton("Rensa");
   private JButton createSavingsAccountButton = new JButton("Create Savings Account");
   private JButton createCreditAccountButton  = new JButton("Create Credit Account");
-  private JButton deleteCustomerButton       = new JButton("Delete Customer");
-  private JButton deleteAccountButton        = new JButton("Delete Account");
+  private JButton deleteButton               = new JButton("Delete");
   private JButton transferButton             = new JButton("Transfer Money");
 
   String[] accountColumns     = { "ID", "Balance", "Account Type", "Interest" };
@@ -50,13 +49,11 @@ public class GUImain extends JFrame implements ActionListener {
 
     // CUSTOMERS
     customerList = new JList<Object>();
-    customerList.setModel(CustomerModel);
+    customerList.setModel(customerModel);
 
     // ACOUNTS
     accountTable = new JTable() {
-      /**
-       * 
-       */
+
       private static final long serialVersionUID = 1L;
 
       public boolean isCellEditable(int row, int column) {
@@ -69,9 +66,7 @@ public class GUImain extends JFrame implements ActionListener {
 
     // TRANSACTIONS
     transactionTable = new JTable() {
-      /**
-       * 
-       */
+
       private static final long serialVersionUID = 1L;
 
       public boolean isCellEditable(int row, int column) {
@@ -110,8 +105,7 @@ public class GUImain extends JFrame implements ActionListener {
     bankpanel.add(createSavingsAccountButton);
     bankpanel.add(createCreditAccountButton);
     bankpanel.add(transferButton);
-    bankpanel.add(deleteAccountButton);
-    bankpanel.add(deleteCustomerButton);
+    bankpanel.add(deleteButton);
 
     createSavingsAccountButton.setVisible(false);
     createCreditAccountButton.setVisible(false);
@@ -121,34 +115,38 @@ public class GUImain extends JFrame implements ActionListener {
     clearButton.addActionListener(this);
     createSavingsAccountButton.addActionListener(this);
     createCreditAccountButton.addActionListener(this);
-    deleteAccountButton.addActionListener(this);
-    deleteCustomerButton.addActionListener(this);
+    deleteButton.addActionListener(this);
     transferButton.addActionListener(this);
     customerList.getSelectionModel().addListSelectionListener(accountTable);
 
     ListSelectionModel select = accountTable.getSelectionModel();
     select.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-    
-    accountTable.addMouseListener(new MouseAdapter(){
-      public void mouseClicked(MouseEvent e){
-        if (e.getClickCount() == 1){
+
+    accountTable.addMouseListener(new MouseAdapter() {
+      public void mouseClicked(MouseEvent e) {
+        if (e.getClickCount() == 1) {
           String selectedCustomerpNr = customerList.getSelectedValue().toString().split(" ")[2];
           Customer customer = logic.matchCustomer(selectedCustomerpNr);
           int accountID = accountTable.getSelectedRow();
           Account account = customer.matchAccount(accountID);
           showTransactions(account);
-           }
         }
-       });
-    
-    customerList.addMouseListener(new MouseAdapter(){
-      public void mouseClicked(MouseEvent e){
-        if (e.getClickCount() == 1){
+      }
+    });
+
+    customerList.addMouseListener(new MouseAdapter() {
+      public void mouseClicked(MouseEvent e) {
+        if (e.getClickCount() == 1) {
+          try {
           showAccounts();
-           }
+          }
+          catch(NullPointerException e1) {
+            System.out.println(e);
+          }
         }
-       });
-  
+      }
+    });
+
     add(bankpanel);
     add(customerList);
     add(new JScrollPane(accountTable), BorderLayout.CENTER);
@@ -161,11 +159,12 @@ public class GUImain extends JFrame implements ActionListener {
   // UI LOGIC. This activated the functions below.
   public void actionPerformed(ActionEvent event) {
     String buttonText = event.getActionCommand();
-    if (buttonText.equals("Add Customer")) {
 
+    if (buttonText.equals("Add Customer")) {
       addCustomer();
       showAccountButtons();
     }
+
     if (buttonText.equals("Show")) {
       showSelected();
     }
@@ -177,31 +176,25 @@ public class GUImain extends JFrame implements ActionListener {
     if (buttonText.equals("Clear")) {
       clear();
     }
-    
+
     if (buttonText.equals("Create Savings Account")) {
       createSavingsAccount();
       showTransactionButtons();
-
     }
-    
+
     if (buttonText.equals("Create Credit Account")) {
       createCreditAccount();
       showTransactionButtons();
     }
-    
+
     if (buttonText.equals("Transfer Money")) {
       transfer();
     }
-    
-    if (buttonText.equals("Delete Account")) {
-      transfer();
-    }
-    
-    if (buttonText.equals("Transfer Money")) {
-      transfer();
+
+    if (buttonText.equals("Delete")) {
+      delete();
     }
   }
-
 
   public void showAccounts() {
 
@@ -227,19 +220,26 @@ public class GUImain extends JFrame implements ActionListener {
 
   public void showTransactions(Account account) {
 
-    ArrayList<Transaction> transactions = account.getAccountTransactions();
-    for (Transaction t : transactions) {
-      String[] transactionDetails = t.getTransacionDetails().split(" ");
-      System.out.println(transactionDetails);
-      transactionModel.addRow(
-          new String[] { transactionDetails[0], transactionDetails[1], transactionDetails[2], transactionDetails[3] });
-      System.out.println(transactionDetails);
+    try {
+      ArrayList<Transaction> transactions = account.getAccountTransactions();
+      for (Transaction t : transactions) {
+        String[] transactionDetails = t.getTransacionDetails().split(" ");
+        System.out.println(transactionDetails);
+        transactionModel.addRow(new String[] { transactionDetails[0], transactionDetails[1], transactionDetails[2],
+            transactionDetails[3] });
+        System.out.println(transactionDetails);
+      }
+    }
+
+    catch (NullPointerException e) {
+      System.out.println(e);
     }
   }
 
   private void addCustomer() {
     logic.createCustomer(nameField.getText(), lastnameField.getText(), pNrField.getText());
-    customerList.setListData(logic.getAllCustomers().toArray());
+    String customerData = nameField.getText() + " " + lastnameField.getText() + " " + pNrField.getText();
+    customerModel.addElement(customerData);
     transactionModel.setRowCount(0);
     clear();
   }
@@ -280,35 +280,22 @@ public class GUImain extends JFrame implements ActionListener {
         .addRow(new String[] { AccounItems.get(0), AccounItems.get(1), AccounItems.get(2), AccounItems.get(3) });
     transactionModel.setRowCount(0);
   }
-  
-  public void deleteCustomer() {
-    showAccounts();
-    int accountNumber;
+
+  public void delete() {
+    String accountNumber;
+    int selectedIndex;
     String AccountData;
     String selectedItems;
     String pNr;
 
     selectedItems = customerList.getSelectedValue().toString();
+    selectedIndex = customerList.getSelectedIndex();
     List<String> items = Arrays.asList(selectedItems.split(" "));
+    System.out.println(selectedIndex);
     pNr = items.get(2);
     logic.deleteCustomer(pNr);
-  
+    customerModel.removeElementAt(selectedIndex);
   }
-  
-  public void deleteAccount() {
-    showAccounts();
-    int accountNumber;
-    String AccountData;
-    String selectedItems;
-    String pNr;
-
-    selectedItems = customerList.getSelectedValue().toString();
-    List<String> items = Arrays.asList(selectedItems.split(" "));
-    pNr = items.get(2);
-    Customer customer = logic.matchCustomer(pNr);
-    Account account = customer.matchAccount(accountId)
-  }
-  
 
   public void transfer() {
     transactionModel.setRowCount(0);
@@ -341,14 +328,13 @@ public class GUImain extends JFrame implements ActionListener {
     // Get account object.
     account = customer.matchAccount(accountNumber);
     // Create transaction options window.
-    m = new MoneyClass(account, transactionModel);
+    m = new MoneyClass(account, transactionModel, accountModel);
     // Set window to visible.
     m.setVisible(true);
 
   }
 
   private void showSelected() {
-
     int position = customerList.getSelectedIndex();
     if (position > -1) {
       nameField.setText(logic.getNameForPersonAt(position));
