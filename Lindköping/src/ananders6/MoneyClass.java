@@ -4,6 +4,8 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -26,11 +28,12 @@ public class MoneyClass extends JFrame implements ActionListener {
   DefaultTableModel         accountModel;
 
   public MoneyClass(Account account, DefaultTableModel transactionModel, DefaultTableModel accountModel) {
+
     this.accountModel = accountModel;
     this.transactionModel = transactionModel;
     this.account = account;
     initiateVariables();
-
+   
   }
 
   public void initiateVariables() {
@@ -43,6 +46,7 @@ public class MoneyClass extends JFrame implements ActionListener {
     moneyField.setBorder(BorderFactory.createTitledBorder("Amount to Transfer"));
     withdrawButton.addActionListener(this);
     depositButton.addActionListener(this);
+
     add(moneyPanel);
     add(withdrawButton);
     add(depositButton);
@@ -54,27 +58,30 @@ public class MoneyClass extends JFrame implements ActionListener {
     String amount;
 
     if (buttonText.equals("Withdraw")) {
+      transactionModel.setRowCount(0);
       amount = moneyField.getText();
       withdrawAmount = Double.parseDouble(amount);
       account.withdraw(withdrawAmount);
-      updateTables();
       this.setVisible(false);
+      updateTransactionTables();
       dispose();
-
+      
     }
+    
     if (buttonText.equals("Deposit")) {
+      transactionModel.setRowCount(0);
       amount = moneyField.getText();
       depositAmount = Double.parseDouble(amount);
       account.deposit(depositAmount);
-      updateTables();
       this.setVisible(false);
+      updateTransactionTables();
       dispose();
-
     }
 
   }
 
-  public void updateTables() {
+  public void updateTransactionTables() {
+  
     ArrayList<Transaction> transactions = account.getAccountTransactions();
     for (Transaction t : transactions) {
       String[] transactionDetails = t.getTransacionDetails().split(" ");
@@ -85,5 +92,4 @@ public class MoneyClass extends JFrame implements ActionListener {
     }
 
   }
-
 }

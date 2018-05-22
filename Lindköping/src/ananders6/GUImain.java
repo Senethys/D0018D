@@ -1,13 +1,11 @@
 package ananders6;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.util.*;
 import java.util.List;
 import java.awt.event.*;
 import java.awt.*;
-import javax.swing.table.*;
 
 //YOU NEED TO ADD A FIELD in the GUI FOR NAME, LASTNAME AND PNR
 
@@ -21,6 +19,7 @@ public class GUImain extends JFrame implements ActionListener {
   private JTextField        nameField;
   private JTextField        lastnameField;
   private JTextField        pNrField;
+
 
   private DefaultTableModel        accountModel     = new DefaultTableModel(0, 0);
   private DefaultTableModel        transactionModel = new DefaultTableModel(0, 0);
@@ -118,42 +117,39 @@ public class GUImain extends JFrame implements ActionListener {
     deleteButton.addActionListener(this);
     transferButton.addActionListener(this);
     customerList.getSelectionModel().addListSelectionListener(accountTable);
+    accountModel.addTableModelListener(accountTable);
 
     ListSelectionModel select = accountTable.getSelectionModel();
     select.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
+    add(bankpanel);
+    add(customerList);
+    add(new JScrollPane(accountTable), BorderLayout.CENTER);
+    add(new JScrollPane(transactionTable), BorderLayout.CENTER);
+    setDefaultCloseOperation(EXIT_ON_CLOSE);
+
     accountTable.addMouseListener(new MouseAdapter() {
-      public void mouseClicked(MouseEvent e) {
+      public void mouseReleased(MouseEvent e) {
         if (e.getClickCount() == 1) {
-          String selectedCustomerpNr = customerList.getSelectedValue().toString().split(" ")[2];
-          Customer customer = logic.matchCustomer(selectedCustomerpNr);
-          int accountID = accountTable.getSelectedRow();
+          int accountID = Integer.parseInt((String) (accountTable.getValueAt(accountTable.getSelectedRow(), 0)));
+          String value = customerList.getSelectedValue().toString();
+          String[] data2 = value.split(" ");
+          Customer customer = logic.matchCustomer(data2[2]);
           Account account = customer.matchAccount(accountID);
+          clearTransactions();
           showTransactions(account);
         }
       }
     });
 
     customerList.addMouseListener(new MouseAdapter() {
-      public void mouseClicked(MouseEvent e) {
+      public void mouseReleased(MouseEvent e) {
         if (e.getClickCount() == 1) {
-          try {
+          clearAccounts();
           showAccounts();
-          }
-          catch(NullPointerException e1) {
-            System.out.println(e);
-          }
         }
       }
     });
-
-    add(bankpanel);
-    add(customerList);
-    add(new JScrollPane(accountTable), BorderLayout.CENTER);
-    add(new JScrollPane(transactionTable), BorderLayout.CENTER);
-
-    setDefaultCloseOperation(EXIT_ON_CLOSE);
-
   }
 
   // UI LOGIC. This activated the functions below.
@@ -174,7 +170,7 @@ public class GUImain extends JFrame implements ActionListener {
     }
 
     if (buttonText.equals("Clear")) {
-      clear();
+      clearAndUnselect();
     }
 
     if (buttonText.equals("Create Savings Account")) {
@@ -196,109 +192,138 @@ public class GUImain extends JFrame implements ActionListener {
     }
   }
 
-  public void showAccounts() {
+  public void showCustomers() {
+    ArrayList<String> customerData = new ArrayList<>();
+    customerData = logic.getAllCustomers();
 
-    while (accountModel.getRowCount() != 0) {
-      accountModel.removeRow(0);
+    for (int i = 0; customerData.size() < i; i++) {
+      customerModel.add(i, customerData.get(i));
     }
+  }
 
-    String selectedCustomerpNr = customerList.getSelectedValue().toString().split(" ")[2];
-    Customer customer = logic.matchCustomer(selectedCustomerpNr);
-
-    ArrayList<String> accounts = customer.getAllCustomerAccountInfo();
-
-    for (int i = accounts.size(); 0 < i; i--) {
-      String testa = accounts.get(i - 1);
-      String[] testb = testa.split(" ");
-      int accountNumber = Integer.parseInt(testb[0]);
-      String accountData = logic.getAccount(selectedCustomerpNr, accountNumber);
-      List<String> AccounItems = Arrays.asList(accountData.split(" "));
-      accountModel
-          .addRow(new String[] { AccounItems.get(0), AccounItems.get(1), AccounItems.get(2), AccounItems.get(3) });
+  public void showAccounts() {
+    int selectedIndex =  customerList.getSelectedIndex();
+    if(selectedIndex != -1) {
+      String selectedCustomerpNr = customerList.getSelectedValue().toString().split(" ")[2];
+      Customer customer = logic.matchCustomer(selectedCustomerpNr);
+      ArrayList<String> accounts = customer.getAllCustomerAccountInfo();
+      for (int i = accounts.size(); 0 < i; i--) {
+        String testa = accounts.get(i - 1);
+        String[] testb = testa.split(" ");
+        int accountNumber = Integer.parseInt(testb[0]);
+        String accountData = logic.getAccount(selectedCustomerpNr, accountNumber);
+        List<String> AccounItems = Arrays.asList(accountData.split(" "));
+        accountModel
+            .addRow(new String[] { AccounItems.get(0), AccounItems.get(1), AccounItems.get(2), AccounItems.get(3) });
+      }
     }
   }
 
   public void showTransactions(Account account) {
-
     try {
       ArrayList<Transaction> transactions = account.getAccountTransactions();
       for (Transaction t : transactions) {
         String[] transactionDetails = t.getTransacionDetails().split(" ");
-        System.out.println(transactionDetails);
         transactionModel.addRow(new String[] { transactionDetails[0], transactionDetails[1], transactionDetails[2],
             transactionDetails[3] });
-        System.out.println(transactionDetails);
       }
     }
 
     catch (NullPointerException e) {
       System.out.println(e);
+      System.out.println("You want to transactions to be shown.");
     }
   }
 
   private void addCustomer() {
+
     logic.createCustomer(nameField.getText(), lastnameField.getText(), pNrField.getText());
     String customerData = nameField.getText() + " " + lastnameField.getText() + " " + pNrField.getText();
     customerModel.addElement(customerData);
-    transactionModel.setRowCount(0);
-    clear();
+    clearAndUnselect();
+
   }
 
   // get targeted customer
   public void createCreditAccount() {
-    showAccounts();
     int accountNumber;
     String AccountData;
     String selectedItems;
     String pNr;
+    if (customerList.getSelectedValue() != null) {
+      selectedItems = customerList.getSelectedValue().toString();
+      List<String> items = Arrays.asList(selectedItems.split(" "));
+      pNr = items.get(2);
+      accountNumber = logic.createCreditAccount(pNr);
+      AccountData = logic.getAccount(pNr, accountNumber);
+      List<String> AccounItems = Arrays.asList(AccountData.split(" "));
+      accountModel
+          .addRow(new String[] { AccounItems.get(0), AccounItems.get(1), AccounItems.get(2), AccounItems.get(3) });
 
-    selectedItems = customerList.getSelectedValue().toString();
-    List<String> items = Arrays.asList(selectedItems.split(" "));
-    pNr = items.get(2);
-    accountNumber = logic.createCreditAccount(pNr);
-    AccountData = logic.getAccount(pNr, accountNumber);
-    List<String> AccounItems = Arrays.asList(AccountData.split(" "));
-    accountModel
-        .addRow(new String[] { AccounItems.get(0), AccounItems.get(1), AccounItems.get(2), AccounItems.get(3) });
-    transactionModel.setRowCount(0);
+    }
   }
 
   public void createSavingsAccount() {
-    showAccounts();
     int accountNumber;
     String AccountData;
     String selectedItems;
     String pNr;
+    if (customerList.getSelectedValue() != null) {
+      selectedItems = customerList.getSelectedValue().toString();
+      List<String> items = Arrays.asList(selectedItems.split(" "));
+      pNr = items.get(2);
+      accountNumber = logic.createSavingsAccount(pNr);
+      AccountData = logic.getAccount(pNr, accountNumber);
+      List<String> AccounItems = Arrays.asList(AccountData.split(" "));
+      accountModel
+          .addRow(new String[] { AccounItems.get(0), AccounItems.get(1), AccounItems.get(2), AccounItems.get(3) });
 
-    selectedItems = customerList.getSelectedValue().toString();
-    List<String> items = Arrays.asList(selectedItems.split(" "));
-    pNr = items.get(2);
-    accountNumber = logic.createSavingsAccount(pNr);
-    AccountData = logic.getAccount(pNr, accountNumber);
-    List<String> AccounItems = Arrays.asList(AccountData.split(" "));
-    accountModel
-        .addRow(new String[] { AccounItems.get(0), AccounItems.get(1), AccounItems.get(2), AccounItems.get(3) });
-    transactionModel.setRowCount(0);
+    }
   }
 
   public void delete() {
-    String accountNumber;
-    int selectedIndex;
-    String AccountData;
-    String selectedItems;
-    String pNr;
+    int selectedCustomerIndex = -1;
+    String selectedCustomerItems;
+    String selectedAccountItems;
+    int selectedAccountIndex = -1;
+    int accountID;
 
-    selectedItems = customerList.getSelectedValue().toString();
-    selectedIndex = customerList.getSelectedIndex();
-    List<String> items = Arrays.asList(selectedItems.split(" "));
-    System.out.println(selectedIndex);
-    pNr = items.get(2);
-    logic.deleteCustomer(pNr);
-    customerModel.removeElementAt(selectedIndex);
+    String pNr;
+    selectedAccountIndex = accountTable.getSelectedRow();
+    selectedCustomerIndex = customerList.getSelectedIndex();
+    System.out.println("Customer Index" + selectedCustomerIndex);
+    System.out.println("Account Index " + selectedAccountIndex);
+
+    if (selectedAccountIndex != -1 && selectedCustomerIndex != -1) {
+      System.out.println("DELETING ACCOUNT");
+      selectedAccountItems = accountModel.getValueAt(selectedAccountIndex, 0).toString();
+      List<String> accountItems = Arrays.asList(selectedAccountItems.split(" "));
+      accountID = Integer.parseInt(accountItems.get(0));
+      selectedCustomerItems = customerModel.getElementAt(selectedCustomerIndex).toString();
+      List<String> cutomeritems = Arrays.asList(selectedCustomerItems.split(" "));
+      pNr = cutomeritems.get(2);
+      Customer c = logic.matchCustomer(pNr);
+      c.closeAccount(accountID);
+      accountModel.removeRow(selectedAccountIndex);
+      
+    }
+
+    if (selectedAccountIndex == -1 && selectedCustomerIndex != -1) {
+      System.out.println("DELETING CUSTOMER");
+      selectedCustomerItems = customerModel.getElementAt(selectedCustomerIndex).toString();
+      List<String> items = Arrays.asList(selectedCustomerItems.split(" "));
+      pNr = items.get(2);
+      System.out.println(pNr);
+      logic.deleteCustomer(pNr);
+      customerModel.removeElementAt(selectedCustomerIndex);
+      customerList.clearSelection();
+      clearAccounts();
+      clearTransactions();
+    }
   }
 
   public void transfer() {
-    transactionModel.setRowCount(0);
+
     int accountNumber = 0;
     int accountNumberIndex;
     String AccountData;
@@ -354,7 +379,19 @@ public class GUImain extends JFrame implements ActionListener {
     transferButton.setVisible(true);
   }
 
-  private void clear() {
+  private void clearTransactions() {
+    transactionModel.setRowCount(0);
+  }
+
+  private void clearAccounts() {
+    accountModel.setRowCount(0);
+  }
+
+  private void clearCustomers() {
+    customerModel.removeAllElements();
+  }
+
+  private void clearAndUnselect() {
     nameField.setText("");
     lastnameField.setText("");
     pNrField.setText("");

@@ -207,5 +207,16 @@ public class Customer {
 		result = name + ' ' + lastname + ' ' + ssn;
 		return result;
 	}
+	
+	
+	 /**
+   * Returnerar om kunden har ett eller flera konton. Används för GUI.
+   *
+   * @param void
+   * @return boolean
+   */
+  public boolean hasOneOrMoreAccounts() {
+    return !this.Accounts.isEmpty();
+  }
 
 }
