@@ -29,7 +29,6 @@ public class GUImain extends JFrame implements ActionListener {
   private DefaultTableModel        transactionModel = new DefaultTableModel(0, 0);
   private DefaultListModel<Object> customerModel    = new DefaultListModel<>();
 
-  private JButton editCustomerButton         = new JButton("Edit Customer Details");
   private JButton addButton                  = new JButton("Add Customer");
   private JButton editButton                 = new JButton("Edit");
   private JButton createSavingsAccountButton = new JButton("Create Savings Account");
@@ -382,8 +381,9 @@ public class GUImain extends JFrame implements ActionListener {
       pNr = cutomeritems.get(2);
       Customer c = logic.matchCustomer(pNr);
       c.closeAccount(accountID);
+      this.enteredpNrs.remove(String.valueOf(pNr));
       accountModel.removeRow(selectedAccountIndex);
-
+      clearTransactions();
     }
     
     //Om det är endast kunden som har ett giltigt select index så tas kunden bort.
@@ -417,9 +417,13 @@ public class GUImain extends JFrame implements ActionListener {
     Customer customer;
     Account account;
     Object accountTableData;
-
+    try {
     // Get Customer data from the table
     selectedItems = customerList.getSelectedValue().toString();
+    } catch(NullPointerException e) {
+      JOptionPane.showMessageDialog(null, "Select an account.");
+      return;
+    }
     // Convert to list.
     List<String> items = Arrays.asList(selectedItems.split(" "));
     // Get personla nunmber in order to get account.
