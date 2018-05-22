@@ -7,12 +7,17 @@ import java.util.List;
 import java.awt.event.*;
 import java.awt.*;
 
-//YOU NEED TO ADD A FIELD in the GUI FOR NAME, LASTNAME AND PNR
+/**
+ * GUI som ansvarar för både grafik och logik.
+ * 
+ * @author Anna Andersson, ananders-6
+ */
 
 public class GUImain extends JFrame implements ActionListener {
 
   private static final long serialVersionUID = 1L;
   private BankLogic         logic;
+  private ArrayList<String> enteredpNrs      = new ArrayList<>();
   private JList<Object>     customerList;
   private JTable            accountTable;
   private JTable            transactionTable;
@@ -20,15 +25,13 @@ public class GUImain extends JFrame implements ActionListener {
   private JTextField        lastnameField;
   private JTextField        pNrField;
 
-
   private DefaultTableModel        accountModel     = new DefaultTableModel(0, 0);
   private DefaultTableModel        transactionModel = new DefaultTableModel(0, 0);
   private DefaultListModel<Object> customerModel    = new DefaultListModel<>();
 
   private JButton editCustomerButton         = new JButton("Edit Customer Details");
   private JButton addButton                  = new JButton("Add Customer");
-  private JButton showButton                 = new JButton("Show");
-  private JButton clearButton                = new JButton("Rensa");
+  private JButton editButton                 = new JButton("Edit");
   private JButton createSavingsAccountButton = new JButton("Create Savings Account");
   private JButton createCreditAccountButton  = new JButton("Create Credit Account");
   private JButton deleteButton               = new JButton("Delete");
@@ -42,13 +45,24 @@ public class GUImain extends JFrame implements ActionListener {
     buildFrame();
   }
 
+  /**
+   * Initinerar alla fält och modeller.
+   * 
+   * @author Anna Andersson, ananders-6
+   */
+
   private void initiateInstanceVariables() {
+
     // BANK LOGIC
     logic = new BankLogic();
 
     // CUSTOMERS
     customerList = new JList<Object>();
     customerList.setModel(customerModel);
+
+    /**
+     * Stänger av cell-editing.
+     */
 
     // ACOUNTS
     accountTable = new JTable() {
@@ -86,6 +100,9 @@ public class GUImain extends JFrame implements ActionListener {
 
   }
 
+  /**
+   * Skapar ramar, aktiverar actionlisteners för listorna.
+   */
   private void buildFrame() {
     setTitle("Bank");
     setSize(1000, 500);
@@ -97,10 +114,10 @@ public class GUImain extends JFrame implements ActionListener {
     bankpanel.add(nameField);
     bankpanel.add(lastnameField);
     bankpanel.add(pNrField);
+
     bankpanel.add(addButton);
-    bankpanel.add(showButton);
-    bankpanel.add(editCustomerButton);
-    bankpanel.add(clearButton);
+    bankpanel.add(editButton);
+
     bankpanel.add(createSavingsAccountButton);
     bankpanel.add(createCreditAccountButton);
     bankpanel.add(transferButton);
@@ -110,8 +127,7 @@ public class GUImain extends JFrame implements ActionListener {
     createCreditAccountButton.setVisible(false);
     transferButton.setVisible(false);
     addButton.addActionListener(this);
-    showButton.addActionListener(this);
-    clearButton.addActionListener(this);
+    editButton.addActionListener(this);
     createSavingsAccountButton.addActionListener(this);
     createCreditAccountButton.addActionListener(this);
     deleteButton.addActionListener(this);
@@ -126,8 +142,12 @@ public class GUImain extends JFrame implements ActionListener {
     add(customerList);
     add(new JScrollPane(accountTable), BorderLayout.CENTER);
     add(new JScrollPane(transactionTable), BorderLayout.CENTER);
+
     setDefaultCloseOperation(EXIT_ON_CLOSE);
 
+    /**
+     * Gör så att när man klickar på konton, uppdateras transaktionerna.
+     */
     accountTable.addMouseListener(new MouseAdapter() {
       public void mouseReleased(MouseEvent e) {
         if (e.getClickCount() == 1) {
@@ -142,6 +162,9 @@ public class GUImain extends JFrame implements ActionListener {
       }
     });
 
+    /**
+     * Gör så att när man klickar på en lista med kunder så uppdateras konton.
+     */
     customerList.addMouseListener(new MouseAdapter() {
       public void mouseReleased(MouseEvent e) {
         if (e.getClickCount() == 1) {
@@ -161,16 +184,8 @@ public class GUImain extends JFrame implements ActionListener {
       showAccountButtons();
     }
 
-    if (buttonText.equals("Show")) {
-      showSelected();
-    }
-
-    if (buttonText.equals("Show") && customerList.getSelectedValue() != null) {
-      showAccounts();
-    }
-
-    if (buttonText.equals("Clear")) {
-      clearAndUnselect();
+    if (buttonText.equals("Edit")) {
+      editCustomerData();
     }
 
     if (buttonText.equals("Create Savings Account")) {
@@ -192,6 +207,12 @@ public class GUImain extends JFrame implements ActionListener {
     }
   }
 
+  /**
+   * Skriver in alla kunder i listan på GUIn. Används för att uppdatera listan
+   * efter ändring.
+   * 
+   * @return void
+   */
   public void showCustomers() {
     ArrayList<String> customerData = new ArrayList<>();
     customerData = logic.getAllCustomers();
@@ -201,9 +222,15 @@ public class GUImain extends JFrame implements ActionListener {
     }
   }
 
+  /**
+   * Skriver in alla kunder i listan på GUIn. Används för att uppdatera listan
+   * efter ändring.
+   * 
+   * @return void
+   */
   public void showAccounts() {
-    int selectedIndex =  customerList.getSelectedIndex();
-    if(selectedIndex != -1) {
+    int selectedIndex = customerList.getSelectedIndex();
+    if (selectedIndex != -1) {
       String selectedCustomerpNr = customerList.getSelectedValue().toString().split(" ")[2];
       Customer customer = logic.matchCustomer(selectedCustomerpNr);
       ArrayList<String> accounts = customer.getAllCustomerAccountInfo();
@@ -219,6 +246,13 @@ public class GUImain extends JFrame implements ActionListener {
     }
   }
 
+  /**
+   * Skriver in alla transaktioner från avgivna kontot på GUIn. Används för att
+   * uppdatera listan efter ändring.
+   * 
+   * @param Account
+   * @return void
+   */
   public void showTransactions(Account account) {
     try {
       ArrayList<Transaction> transactions = account.getAccountTransactions();
@@ -227,24 +261,62 @@ public class GUImain extends JFrame implements ActionListener {
         transactionModel.addRow(new String[] { transactionDetails[0], transactionDetails[1], transactionDetails[2],
             transactionDetails[3] });
       }
-    }
-
-    catch (NullPointerException e) {
+    } catch (NullPointerException e) {
       System.out.println(e);
       System.out.println("You want to transactions to be shown.");
     }
   }
 
+  /**
+   * Används för att lägga till en kund. Har flera kontroll mekanismer för att
+   * korrekt data ska matas in. Tar inte emot dubbla personnummer.
+   * 
+   * @return void
+   */
   private void addCustomer() {
+    String nameF = nameField.getText();
+    String lastF = lastnameField.getText();
+    String pNrF = pNrField.getText();
+    String customerData;
 
-    logic.createCustomer(nameField.getText(), lastnameField.getText(), pNrField.getText());
-    String customerData = nameField.getText() + " " + lastnameField.getText() + " " + pNrField.getText();
-    customerModel.addElement(customerData);
-    clearAndUnselect();
+    if (nameF.isEmpty() || lastF.isEmpty() || pNrF.isEmpty()) {
+      JOptionPane.showMessageDialog(null, "You can't have an empty field.");
+      return;
+    }
 
+    if (!isInteger(pNrF)) {
+      JOptionPane.showMessageDialog(null, "Personal number must be an integer.");
+      return;
+    }
+
+    // Ta bort för att få svensk standard för personnummer.
+    
+    // if(pNrF.length() != 10) {
+    // JOptionPane.showMessageDialog(null, "Personal number must be 10 number
+    // long.");
+    // return;
+    // }
+
+    else {
+
+      if (enteredpNrs.contains(pNrF) == true) {
+        JOptionPane.showMessageDialog(null, "This personal number already exists.");
+        return;
+      } else {
+        enteredpNrs.add(pNrF);
+        logic.createCustomer(nameF, lastF, pNrF);
+        customerData = nameField.getText() + " " + lastnameField.getText() + " " + pNrField.getText();
+        customerModel.addElement(customerData);
+        clearAndUnselect();
+      }
+    }
   }
-
-  // get targeted customer
+  
+  /**
+   * Slapar ett kredit-konto för en target kund och skriver in den i listan.
+   * Går inte ta up mer än 5000kr. 
+   * @return void
+   */
   public void createCreditAccount() {
     int accountNumber;
     String AccountData;
@@ -262,7 +334,11 @@ public class GUImain extends JFrame implements ActionListener {
 
     }
   }
-
+  
+  /**
+   * Slapar ett kredit-konto för en target kund och skriver in den i listan.
+   * @return void
+   */
   public void createSavingsAccount() {
     int accountNumber;
     String AccountData;
@@ -280,22 +356,24 @@ public class GUImain extends JFrame implements ActionListener {
 
     }
   }
-
+  
+  /**
+   * Tar bort kunden eller bara kontot beroende på vad som har klickats i listorna.
+   * @return void
+   */
   public void delete() {
     int selectedCustomerIndex = -1;
     String selectedCustomerItems;
     String selectedAccountItems;
     int selectedAccountIndex = -1;
     int accountID;
-
     String pNr;
+    
     selectedAccountIndex = accountTable.getSelectedRow();
     selectedCustomerIndex = customerList.getSelectedIndex();
-    System.out.println("Customer Index" + selectedCustomerIndex);
-    System.out.println("Account Index " + selectedAccountIndex);
 
+    //Om både kunden och ett av konton har valts tas endast kontot bort.
     if (selectedAccountIndex != -1 && selectedCustomerIndex != -1) {
-      System.out.println("DELETING ACCOUNT");
       selectedAccountItems = accountModel.getValueAt(selectedAccountIndex, 0).toString();
       List<String> accountItems = Arrays.asList(selectedAccountItems.split(" "));
       accountID = Integer.parseInt(accountItems.get(0));
@@ -305,28 +383,34 @@ public class GUImain extends JFrame implements ActionListener {
       Customer c = logic.matchCustomer(pNr);
       c.closeAccount(accountID);
       accountModel.removeRow(selectedAccountIndex);
-      
-    }
 
+    }
+    
+    //Om det är endast kunden som har ett giltigt select index så tas kunden bort.
     if (selectedAccountIndex == -1 && selectedCustomerIndex != -1) {
-      System.out.println("DELETING CUSTOMER");
       selectedCustomerItems = customerModel.getElementAt(selectedCustomerIndex).toString();
       List<String> items = Arrays.asList(selectedCustomerItems.split(" "));
       pNr = items.get(2);
       System.out.println(pNr);
       logic.deleteCustomer(pNr);
       customerModel.removeElementAt(selectedCustomerIndex);
+      //Tar bort all data från tables som är relevant för kontot.
       customerList.clearSelection();
       clearAccounts();
       clearTransactions();
     }
   }
-
+  
+  
+  
+  /**
+   * Instantierar nytt fönster för att skicka över pengar.
+   * @return void
+   */
   public void transfer() {
 
     int accountNumber = 0;
     int accountNumberIndex;
-    String AccountData;
     String selectedItems;
     String pNr;
     MoneyClass m;
@@ -346,8 +430,6 @@ public class GUImain extends JFrame implements ActionListener {
     accountTableData = accountModel.getValueAt(accountNumberIndex, 0);
     // Get account ID
     accountNumber = Integer.parseInt(accountTableData.toString());
-    // Get all info about account in the database.
-    AccountData = logic.getAccount(pNr, accountNumber);
     // Get customer object.
     customer = logic.matchCustomer(pNr);
     // Get account object.
@@ -358,8 +440,12 @@ public class GUImain extends JFrame implements ActionListener {
     m.setVisible(true);
 
   }
-
-  private void showSelected() {
+  
+  /**
+   * Instantierar nytt fönster för att skicka över pengar.
+   * @return void
+   */
+  private void editCustomerData() {
     int position = customerList.getSelectedIndex();
     if (position > -1) {
       nameField.setText(logic.getNameForPersonAt(position));
@@ -370,32 +456,64 @@ public class GUImain extends JFrame implements ActionListener {
     }
   }
 
+  /**
+   * Visar konto-tillägsknapparna.
+   * @return void
+   */
   private void showAccountButtons() {
     createSavingsAccountButton.setVisible(true);
     createCreditAccountButton.setVisible(true);
   }
-
+  
+  /**
+   * Visar överförings-knappen.
+   * @return void
+   */
   private void showTransactionButtons() {
     transferButton.setVisible(true);
   }
 
+  /**
+   * Rensar transaktionsListan.
+   * @return void
+   */
   private void clearTransactions() {
     transactionModel.setRowCount(0);
   }
 
+  /**
+   * Rensar kontolistan.
+   * Används vid uppdatering.
+   * @return void
+   */
   private void clearAccounts() {
     accountModel.setRowCount(0);
   }
 
-  private void clearCustomers() {
-    customerModel.removeAllElements();
-  }
-
+  /**
+   * Rensar inpufälten, transaktionerna och konton. 
+   * @return void
+   */
   private void clearAndUnselect() {
     nameField.setText("");
     lastnameField.setText("");
     pNrField.setText("");
     transactionModel.setRowCount(0);
     accountModel.setRowCount(0);
+  }
+
+  
+  /**
+   * Aänvänds för att kontrollera om personnumret (Sträng) är numeriskt.
+   * @param String
+   * @return boolean
+   */
+  public boolean isInteger(String pNr) {
+    try {
+      Integer.parseInt(pNr);
+      return true;
+    } catch (Exception e) {
+      return false;
+    }
   }
 }

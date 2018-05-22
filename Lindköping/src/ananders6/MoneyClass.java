@@ -10,6 +10,7 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
@@ -71,11 +72,16 @@ public class MoneyClass extends JFrame implements ActionListener {
     if (buttonText.equals("Deposit")) {
       transactionModel.setRowCount(0);
       amount = moneyField.getText();
+      if(Integer.parseInt(amount) < 0) {
+        JOptionPane.showMessageDialog(null, "You can't deposit a negative amount");
+      } 
+      else {
       depositAmount = Double.parseDouble(amount);
       account.deposit(depositAmount);
       this.setVisible(false);
       updateTransactionTables();
       dispose();
+      }
     }
 
   }
