@@ -106,8 +106,7 @@ public class GUImain extends JFrame implements ActionListener {
     setTitle("Bank");
     setSize(1000, 500);
     setLocation(100, 100);
-    setLayout(new GridLayout(1, 2));
-
+    setLayout(new GridLayout(1, 3));
     JPanel bankpanel = new JPanel(new GridLayout(5, 1));
 
     bankpanel.add(nameField);
