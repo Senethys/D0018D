@@ -172,6 +172,15 @@ public class GUImain extends JFrame implements ActionListener {
       }
     });
   }
+  
+  public void buildMenu() {
+	  JMenuBar menubar = new JMenuBar();
+	  JMenuItem menuItem = new JMenuItem("Exit");
+	  menuItem.setMnemonic(KeyEvent.VK_E);
+	  menuItem.addActionListener((ActionEvent event) -> {
+		  System.exit(0);
+	  });
+  }
 
   // UI LOGIC. This activated the functions below.
   public void actionPerformed(ActionEvent event) {
