@@ -42,6 +42,7 @@ public class GUImain extends JFrame implements ActionListener {
   public GUImain() {
     initiateInstanceVariables();
     buildFrame();
+    buildMenu(this);
   }
 
   /**
@@ -168,20 +169,33 @@ public class GUImain extends JFrame implements ActionListener {
         if (e.getClickCount() == 1) {
           clearAccounts();
           showAccounts();
+       
         }
       }
     });
   }
   
-  public void buildMenu() {
-	  JMenuBar menubar = new JMenuBar();
-	  JMenuItem menuItem = new JMenuItem("Exit");
-	  menuItem.setMnemonic(KeyEvent.VK_E);
-	  menuItem.addActionListener((ActionEvent event) -> {
-		  System.exit(0);
-	  });
+public void buildMenu(JFrame frame) {
+    
+    JMenuBar menubar = new JMenuBar();
+    JMenu menu=new JMenu("Menu");
+    JMenuItem menuItem = new JMenuItem("New Bank");
+    JMenuItem menuItemExist = new JMenuItem("Exit");
+    
+    menuItemExist.setMnemonic(KeyEvent.VK_E);
+    menuItemExist.addActionListener((ActionEvent event) -> {
+      System.exit(0);
+    });
+    
+    menu.add(menuItem);
+    menu.add(menuItemExist);
+    menubar.add(menu);
+      
+    frame.setJMenuBar(menubar);  
+      frame.setSize(400,400);  
+       
+      frame.setVisible(true);
   }
-
   // UI LOGIC. This activated the functions below.
   public void actionPerformed(ActionEvent event) {
     String buttonText = event.getActionCommand();
@@ -213,6 +227,8 @@ public class GUImain extends JFrame implements ActionListener {
       delete();
     }
   }
+  
+ 
 
   /**
    * Skriver in alla kunder i listan på GUIn. Används för att uppdatera listan
