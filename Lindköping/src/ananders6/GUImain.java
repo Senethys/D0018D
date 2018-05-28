@@ -188,7 +188,8 @@ public class GUImain extends JFrame implements ActionListener {
       }
 
     });
-
+    
+    
     /**
      * Gör så att när man klickar på en lista med kunder så uppdateras konton.
      */
@@ -219,8 +220,16 @@ public class GUImain extends JFrame implements ActionListener {
     menuItemExist.addActionListener((ActionEvent event) -> {
       System.exit(0);
     });
+    
+    menuItem.addActionListener((ActionEvent event) -> {
+      GUImain newBank = new GUImain();
+    });
 
     menu.add(menuItem);
+    menu.add(menuItem1);
+    menu.add(menuItem2);
+    menu.add(menuItem3);
+    menu.add(menuItem4);
     menu.add(menuItemExist);
     menubar.add(menu);
 
@@ -350,7 +359,6 @@ public class GUImain extends JFrame implements ActionListener {
     }
 
     // Ta bort för att få svensk standard för personnummer.
-
     // if(pNrF.length() != 10) {
     // JOptionPane.showMessageDialog(null, "Personal number must be 10 number
     // long.");
@@ -532,16 +540,31 @@ public class GUImain extends JFrame implements ActionListener {
   }
 
   /**
-   * Instantierar nytt fönster för att skicka över pengar.
+   * Ändrar personens för ock efternamn.
    * 
    * @return void
    */
   private void editCustomerData() {
     int position = customerList.getSelectedIndex();
     if (position > -1) {
-      nameField.setText(logic.getNameForPersonAt(position));
-      lastnameField.setText(logic.getLastNameForPersonAt(position));
-      pNrField.setText(logic.getpNrAt(position));
+      String nameF = nameField.getText();
+      String lastF = lastnameField.getText();
+      String pNrF = logic.getpNrAt(position);
+      String customerData =  nameF+ " " + lastF + " " + pNrF;
+      
+      if (nameF.matches(".*\\d+.*") || lastF.matches(".*\\d+.*")) {
+        JOptionPane.showMessageDialog(null, "Names can't contain integers.");
+        return;
+      }
+
+      if (nameF.isEmpty() || lastF.isEmpty() || pNrF.isEmpty()) {
+        JOptionPane.showMessageDialog(null, "You can't have an empty field.");
+        return;
+      }
+      
+      logic.changeCustomerName(nameF, lastF, pNrF);
+      customerModel.removeElementAt(position);
+      customerModel.insertElementAt(customerData, position);
     } else {
       JOptionPane.showMessageDialog(null, "You need a person in the list!");
     }
@@ -573,7 +596,7 @@ public class GUImain extends JFrame implements ActionListener {
   private void clearAccounts() {
     accountModel.setRowCount(0);
   }
-
+  
   /**
    * Rensar inpufälten, transaktionerna och konton.
    * 

@@ -103,7 +103,6 @@ public class MoneyClass extends JFrame implements ActionListener {
       updateTransactionTables();
       // Stänger av fönstret.
       dispose();
-
     }
 
     if (buttonText.equals("Deposit")) {
