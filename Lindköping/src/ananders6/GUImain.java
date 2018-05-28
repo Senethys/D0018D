@@ -91,8 +91,13 @@ public class GUImain extends JFrame implements ActionListener {
     transactionTable.setModel(transactionModel);
 
     nameField = new JTextField();
+    nameField.setBounds(10, 10, 200, 35);
+
     lastnameField = new JTextField();
+    lastnameField.setBounds(10, 50, 200, 35);
+
     pNrField = new JTextField();
+    pNrField.setBounds(10, 90, 200, 35);
 
     nameField.setBorder(BorderFactory.createTitledBorder("Name"));
     lastnameField.setBorder(BorderFactory.createTitledBorder("Lastname"));
@@ -105,10 +110,28 @@ public class GUImain extends JFrame implements ActionListener {
    */
   private void buildFrame() {
     setTitle("Bank");
-    setSize(1000, 500);
     setLocation(100, 100);
-    setLayout(new GridLayout(1, 3));
-    JPanel bankpanel = new JPanel(new GridLayout(5, 1));
+    setLayout(null);
+    setPreferredSize(new Dimension(5000, 5000));
+    setMinimumSize(new Dimension(1200, 500));
+
+    JPanel bankpanel = new JPanel();
+    bankpanel.setLayout(null);
+    bankpanel.setBounds(5, 5, 2000, 2000);
+
+    JScrollPane customerListPane = new JScrollPane(customerList);
+    customerList.getSelectionModel().addListSelectionListener(accountTable);
+    customerListPane.setBounds(250, 90, 250, 1500);
+
+    JScrollPane accountTablePane = new JScrollPane(accountTable);
+    accountTablePane.setBounds(520, 90, 280, 1500);
+
+    JScrollPane transactionTablePane = new JScrollPane(transactionTable);
+    transactionTablePane.setBounds(820, 90, 270, 1500);
+
+    bankpanel.add(customerListPane);
+    bankpanel.add(accountTablePane);
+    bankpanel.add(transactionTablePane);
 
     bankpanel.add(nameField);
     bankpanel.add(lastnameField);
@@ -119,29 +142,33 @@ public class GUImain extends JFrame implements ActionListener {
 
     bankpanel.add(createSavingsAccountButton);
     bankpanel.add(createCreditAccountButton);
+
     bankpanel.add(transferButton);
     bankpanel.add(deleteButton);
 
-    createSavingsAccountButton.setVisible(false);
-    createCreditAccountButton.setVisible(false);
-    transferButton.setVisible(false);
     addButton.addActionListener(this);
-    editButton.addActionListener(this);
-    createSavingsAccountButton.addActionListener(this);
-    createCreditAccountButton.addActionListener(this);
-    deleteButton.addActionListener(this);
-    transferButton.addActionListener(this);
-    customerList.getSelectionModel().addListSelectionListener(accountTable);
-    accountModel.addTableModelListener(accountTable);
+    addButton.setBounds(10, 130, 120, 30);
 
+    editButton.addActionListener(this);
+    editButton.setBounds(10, 170, 120, 30);
+
+    createSavingsAccountButton.addActionListener(this);
+    createSavingsAccountButton.setBounds(250, 10, 170, 30);
+
+    createCreditAccountButton.addActionListener(this);
+    createCreditAccountButton.setBounds(250, 50, 170, 30);
+
+    deleteButton.addActionListener(this);
+    deleteButton.setBounds(10, 210, 120, 30);
+
+    transferButton.addActionListener(this);
+    transferButton.setBounds(520, 50, 170, 30);
+
+    accountModel.addTableModelListener(accountTable);
     ListSelectionModel select = accountTable.getSelectionModel();
     select.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
     add(bankpanel);
-    add(customerList);
-    add(new JScrollPane(accountTable), BorderLayout.CENTER);
-    add(new JScrollPane(transactionTable), BorderLayout.CENTER);
-
     setDefaultCloseOperation(EXIT_ON_CLOSE);
 
     /**
@@ -159,50 +186,55 @@ public class GUImain extends JFrame implements ActionListener {
           showTransactions(account);
         }
       }
+
     });
 
     /**
      * Gör så att när man klickar på en lista med kunder så uppdateras konton.
      */
     customerList.addMouseListener(new MouseAdapter() {
+
       public void mouseReleased(MouseEvent e) {
         if (e.getClickCount() == 1) {
           clearAccounts();
           showAccounts();
-       
         }
       }
     });
   }
-  
-public void buildMenu(JFrame frame) {
-    
+
+  public void buildMenu(JFrame frame) {
+
     JMenuBar menubar = new JMenuBar();
-    JMenu menu=new JMenu("Menu");
+    JMenu menu = new JMenu("Menu");
     JMenuItem menuItem = new JMenuItem("New Bank");
+    JMenuItem menuItem1 = new JMenuItem("Import Account Data");
+    JMenuItem menuItem2 = new JMenuItem("Export Account Data");
+    JMenuItem menuItem3 = new JMenuItem("Import Bank Data");
+    JMenuItem menuItem4 = new JMenuItem("Export Bank Data");
+
     JMenuItem menuItemExist = new JMenuItem("Exit");
-    
+
     menuItemExist.setMnemonic(KeyEvent.VK_E);
     menuItemExist.addActionListener((ActionEvent event) -> {
       System.exit(0);
     });
-    
+
     menu.add(menuItem);
     menu.add(menuItemExist);
     menubar.add(menu);
-      
-    frame.setJMenuBar(menubar);  
-      frame.setSize(400,400);  
-       
-      frame.setVisible(true);
+
+    frame.setJMenuBar(menubar);
+    frame.setSize(400, 400);
+    frame.setVisible(true);
   }
+
   // UI LOGIC. This activated the functions below.
   public void actionPerformed(ActionEvent event) {
     String buttonText = event.getActionCommand();
 
     if (buttonText.equals("Add Customer")) {
       addCustomer();
-      showAccountButtons();
     }
 
     if (buttonText.equals("Edit")) {
@@ -227,8 +259,6 @@ public void buildMenu(JFrame frame) {
       delete();
     }
   }
-  
- 
 
   /**
    * Skriver in alla kunder i listan på GUIn. Används för att uppdatera listan
@@ -301,6 +331,13 @@ public void buildMenu(JFrame frame) {
     String lastF = lastnameField.getText();
     String pNrF = pNrField.getText();
     String customerData;
+    
+    //REgex kopierades från
+    //https://stackoverflow.com/questions/18590901/check-if-a-string-contains-numbers-java?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+    if (nameF.matches(".*\\d+.*") || lastF.matches(".*\\d+.*")) {
+      JOptionPane.showMessageDialog(null, "Names can't contain integers.");
+      return;
+    }
 
     if (nameF.isEmpty() || lastF.isEmpty() || pNrF.isEmpty()) {
       JOptionPane.showMessageDialog(null, "You can't have an empty field.");
@@ -313,7 +350,7 @@ public void buildMenu(JFrame frame) {
     }
 
     // Ta bort för att få svensk standard för personnummer.
-    
+
     // if(pNrF.length() != 10) {
     // JOptionPane.showMessageDialog(null, "Personal number must be 10 number
     // long.");
@@ -334,10 +371,11 @@ public void buildMenu(JFrame frame) {
       }
     }
   }
-  
+
   /**
-   * Slapar ett kredit-konto för en target kund och skriver in den i listan.
-   * Går inte ta up mer än 5000kr. 
+   * Slapar ett kredit-konto för en target kund och skriver in den i listan. Går
+   * inte ta up mer än 5000kr.
+   * 
    * @return void
    */
   public void createCreditAccount() {
@@ -355,11 +393,14 @@ public void buildMenu(JFrame frame) {
       accountModel
           .addRow(new String[] { AccounItems.get(0), AccounItems.get(1), AccounItems.get(2), AccounItems.get(3) });
 
+    } else {
+      JOptionPane.showMessageDialog(null, "Select a customer.");
     }
   }
-  
+
   /**
    * Slapar ett kredit-konto för en target kund och skriver in den i listan.
+   * 
    * @return void
    */
   public void createSavingsAccount() {
@@ -377,25 +418,30 @@ public void buildMenu(JFrame frame) {
       accountModel
           .addRow(new String[] { AccounItems.get(0), AccounItems.get(1), AccounItems.get(2), AccounItems.get(3) });
 
+    } else {
+      JOptionPane.showMessageDialog(null, "Select a customer.");
     }
   }
-  
+
   /**
-   * Tar bort kunden eller bara kontot beroende på vad som har klickats i listorna.
+   * Tar bort kunden eller bara kontot beroende på vad som har klickats i
+   * listorna.
+   * 
    * @return void
    */
   public void delete() {
     int selectedCustomerIndex = -1;
-    String selectedCustomerItems;
+    String selectedCustomerItems = null;
     String selectedAccountItems;
+    String pNr;
     int selectedAccountIndex = -1;
     int accountID;
-    String pNr;
-    
+    int deleteAccountConfirm;
+
     selectedAccountIndex = accountTable.getSelectedRow();
     selectedCustomerIndex = customerList.getSelectedIndex();
 
-    //Om både kunden och ett av konton har valts tas endast kontot bort.
+    // Om både kunden och ett av konton har valts tas endast kontot bort.
     if (selectedAccountIndex != -1 && selectedCustomerIndex != -1) {
       selectedAccountItems = accountModel.getValueAt(selectedAccountIndex, 0).toString();
       List<String> accountItems = Arrays.asList(selectedAccountItems.split(" "));
@@ -409,26 +455,38 @@ public void buildMenu(JFrame frame) {
       accountModel.removeRow(selectedAccountIndex);
       clearTransactions();
     }
-    
-    //Om det är endast kunden som har ett giltigt select index så tas kunden bort.
+
+    // Om det är endast kunden som har ett giltigt select index så tas kunden bort.
     if (selectedAccountIndex == -1 && selectedCustomerIndex != -1) {
-      selectedCustomerItems = customerModel.getElementAt(selectedCustomerIndex).toString();
-      List<String> items = Arrays.asList(selectedCustomerItems.split(" "));
-      pNr = items.get(2);
-      System.out.println(pNr);
-      logic.deleteCustomer(pNr);
-      customerModel.removeElementAt(selectedCustomerIndex);
-      //Tar bort all data från tables som är relevant för kontot.
-      customerList.clearSelection();
-      clearAccounts();
-      clearTransactions();
+      deleteAccountConfirm = JOptionPane.showConfirmDialog((Component) null,
+          "Are you sure you want to delete selected customer?", "Confirm", JOptionPane.YES_NO_OPTION);
+
+      if (deleteAccountConfirm == JOptionPane.YES_OPTION) {
+        selectedCustomerItems = customerModel.getElementAt(selectedCustomerIndex).toString();
+        List<String> items = Arrays.asList(selectedCustomerItems.split(" "));
+        pNr = items.get(2);
+        System.out.println(pNr);
+        logic.deleteCustomer(pNr);
+        customerModel.removeElementAt(selectedCustomerIndex);
+        // Tar bort all data från tables som är relevant för kontot.
+        for(String pNrs: enteredpNrs) {
+          if(pNrs == pNr) {
+            enteredpNrs.remove(pNr);
+          }
+        }
+        customerList.clearSelection();
+        clearAccounts();
+        clearTransactions();
+      }
+    } else {
+      return;
     }
+
   }
-  
-  
-  
+
   /**
    * Instantierar nytt fönster för att skicka över pengar.
+   * 
    * @return void
    */
   public void transfer() {
@@ -442,9 +500,9 @@ public void buildMenu(JFrame frame) {
     Account account;
     Object accountTableData;
     try {
-    // Get Customer data from the table
-    selectedItems = customerList.getSelectedValue().toString();
-    } catch(NullPointerException e) {
+      // Get Customer data from the table
+      selectedItems = customerList.getSelectedValue().toString();
+    } catch (NullPointerException e) {
       JOptionPane.showMessageDialog(null, "Select an account.");
       return;
     }
@@ -454,23 +512,28 @@ public void buildMenu(JFrame frame) {
     pNr = items.get(2);
     // Get account index from JTable model.
     accountNumberIndex = accountTable.getSelectedRow();
-    // Get account data from JTable model.
-    accountTableData = accountModel.getValueAt(accountNumberIndex, 0);
-    // Get account ID
-    accountNumber = Integer.parseInt(accountTableData.toString());
-    // Get customer object.
-    customer = logic.matchCustomer(pNr);
-    // Get account object.
-    account = customer.matchAccount(accountNumber);
-    // Create transaction options window.
-    m = new MoneyClass(account, transactionModel, accountModel);
-    // Set window to visible.
-    m.setVisible(true);
 
+    try {
+      // Get account data from JTable model.
+      accountTableData = accountModel.getValueAt(accountNumberIndex, 0);
+      accountNumber = Integer.parseInt(accountTableData.toString());
+      // Get customer object.
+      customer = logic.matchCustomer(pNr);
+      // Get account object.
+      account = customer.matchAccount(accountNumber);
+      // Create transaction options window.
+      m = new MoneyClass(account, transactionModel, accountModel);
+      // Set window to visible.
+      m.setVisible(true);
+      // Get account ID
+    } catch (ArrayIndexOutOfBoundsException e) {
+      System.out.println("You have to select an account first.");
+    }
   }
-  
+
   /**
    * Instantierar nytt fönster för att skicka över pengar.
+   * 
    * @return void
    */
   private void editCustomerData() {
@@ -485,16 +548,8 @@ public void buildMenu(JFrame frame) {
   }
 
   /**
-   * Visar konto-tillägsknapparna.
-   * @return void
-   */
-  private void showAccountButtons() {
-    createSavingsAccountButton.setVisible(true);
-    createCreditAccountButton.setVisible(true);
-  }
-  
-  /**
    * Visar överförings-knappen.
+   * 
    * @return void
    */
   private void showTransactionButtons() {
@@ -503,6 +558,7 @@ public void buildMenu(JFrame frame) {
 
   /**
    * Rensar transaktionsListan.
+   * 
    * @return void
    */
   private void clearTransactions() {
@@ -510,8 +566,8 @@ public void buildMenu(JFrame frame) {
   }
 
   /**
-   * Rensar kontolistan.
-   * Används vid uppdatering.
+   * Rensar kontolistan. Används vid uppdatering.
+   * 
    * @return void
    */
   private void clearAccounts() {
@@ -519,7 +575,8 @@ public void buildMenu(JFrame frame) {
   }
 
   /**
-   * Rensar inpufälten, transaktionerna och konton. 
+   * Rensar inpufälten, transaktionerna och konton.
+   * 
    * @return void
    */
   private void clearAndUnselect() {
@@ -530,9 +587,9 @@ public void buildMenu(JFrame frame) {
     accountModel.setRowCount(0);
   }
 
-  
   /**
    * Aänvänds för att kontrollera om personnumret (Sträng) är numeriskt.
+   * 
    * @param String
    * @return boolean
    */
