@@ -39,6 +39,9 @@ public class GUImain extends JFrame implements ActionListener {
   String[] accountColumns     = { "ID", "Balance", "Account Type", "Interest" };
   String[] transactionColumns = { "Date", "Time", "Amount", "Balance" };
 
+  /**
+   * Konstruktor for GUImain
+   */
   public GUImain() {
     initiateInstanceVariables();
     buildFrame();
@@ -202,7 +205,11 @@ public class GUImain extends JFrame implements ActionListener {
       }
     });
   }
-
+  
+  /**
+   * Skapar en meny för programmet. 
+   * @param JFrame
+   */
   public void buildMenu(JFrame frame) {
 
     JMenuBar menubar = new JMenuBar();
@@ -290,17 +297,25 @@ public class GUImain extends JFrame implements ActionListener {
    * @return void
    */
   public void showAccounts() {
+    String selectedCustomerpNr;
+    Customer customer;
+    ArrayList<String> accounts;
+    String accountAsString;
+    String[] accountAsList;
+    int accountNumber;
+    String accountData;
+    List<String> AccounItems;
     int selectedIndex = customerList.getSelectedIndex();
     if (selectedIndex != -1) {
-      String selectedCustomerpNr = customerList.getSelectedValue().toString().split(" ")[2];
-      Customer customer = logic.matchCustomer(selectedCustomerpNr);
-      ArrayList<String> accounts = customer.getAllCustomerAccountInfo();
+      selectedCustomerpNr = customerList.getSelectedValue().toString().split(" ")[2];
+      customer = logic.matchCustomer(selectedCustomerpNr);
+      accounts = customer.getAllCustomerAccountInfo();
       for (int i = accounts.size(); 0 < i; i--) {
-        String testa = accounts.get(i - 1);
-        String[] testb = testa.split(" ");
-        int accountNumber = Integer.parseInt(testb[0]);
-        String accountData = logic.getAccount(selectedCustomerpNr, accountNumber);
-        List<String> AccounItems = Arrays.asList(accountData.split(" "));
+        accountAsString = accounts.get(i - 1);
+        accountAsList = accountAsString.split(" ");
+        accountNumber = Integer.parseInt(accountAsList[0]);
+        accountData = logic.getAccount(selectedCustomerpNr, accountNumber);
+        AccounItems = Arrays.asList(accountData.split(" "));
         accountModel
             .addRow(new String[] { AccounItems.get(0), AccounItems.get(1), AccounItems.get(2), AccounItems.get(3) });
       }
@@ -352,7 +367,7 @@ public class GUImain extends JFrame implements ActionListener {
       return;
     }
 
-    if (!isInteger(pNrF)) {
+    if (!pNrF.matches("-?\\d+")) {
       JOptionPane.showMessageDialog(null, "Personal number must be an integer.");
       return;
     }

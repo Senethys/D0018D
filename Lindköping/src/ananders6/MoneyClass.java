@@ -132,10 +132,10 @@ public class MoneyClass extends JFrame implements ActionListener {
    * @return void
    */
   public void updateTransactionTables() {
-
+    String[] transactionDetails;
     ArrayList<Transaction> transactions = account.getAccountTransactions();
     for (Transaction t : transactions) {
-      String[] transactionDetails = t.getTransacionDetails().split(" ");
+      transactionDetails = t.getTransacionDetails().split(" ");
       System.out.println(transactionDetails);
       transactionModel.addRow(
           new String[] { transactionDetails[0], transactionDetails[1], transactionDetails[2], transactionDetails[3] });
