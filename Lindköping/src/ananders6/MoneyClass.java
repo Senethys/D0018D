@@ -95,7 +95,7 @@ public class MoneyClass extends JFrame implements ActionListener {
 
       }
       // Spara i objektet.
-      if(withdrawAmount != 0) {
+      if (withdrawAmount != 0) {
         account.withdraw(withdrawAmount);
       }
       this.setVisible(false);
@@ -109,7 +109,7 @@ public class MoneyClass extends JFrame implements ActionListener {
       transactionModel.setRowCount(0);
       amount = moneyField.getText();
       try {
-        
+
         if (Integer.parseInt(amount) <= 0) {
           JOptionPane.showMessageDialog(null, "You can't deposit 0 or a negative amount");
         } else {
@@ -128,6 +128,7 @@ public class MoneyClass extends JFrame implements ActionListener {
 
   /**
    * Uppdaterar transaktionsListorna efter att någon förändring hände.
+   * 
    * @return void
    */
   public void updateTransactionTables() {

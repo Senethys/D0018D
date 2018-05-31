@@ -2,7 +2,6 @@ package ananders6;
 
 import java.util.ArrayList;
 
-
 /**
  * Huvudclassen som innehåller alla klasser, Customer och Accountyper.
  * 
@@ -141,7 +140,6 @@ public class BankLogic {
 
   }
 
-
   /**
    * Tar bort och alla dess konton från banken. Allt som togs bort returneras som
    * strängar i ArrayList.
@@ -190,8 +188,6 @@ public class BankLogic {
     }
     return accountNumber;
   }
-  
-  
 
   /**
    * Skapar ett unikt kreditkonto till kund med personnummer pNr. Returnerar -1 om
@@ -340,21 +336,16 @@ public class BankLogic {
     }
     return result;
   }
-  
 
-  
-  public String getNameForPersonAt(int position)
-  {
+  public String getNameForPersonAt(int position) {
     return (CustomerList.get(position)).getCustomerName();
   }
 
-  public String getLastNameForPersonAt(int position)
-  {
+  public String getLastNameForPersonAt(int position) {
     return (CustomerList.get(position)).getCustomerLastname();
   }
-  
-  public String getpNrAt(int position)
-  {
+
+  public String getpNrAt(int position) {
     return (CustomerList.get(position)).getCustomerpNr();
   }
 }

@@ -1,6 +1,9 @@
 package ananders6;
-
-
+/**
+ * Startar programmet. 
+ * 
+ * @author Anna Andersson, ananders-6
+ */
 
 public class Main {
 

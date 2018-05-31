@@ -188,8 +188,7 @@ public class GUImain extends JFrame implements ActionListener {
       }
 
     });
-    
-    
+
     /**
      * Gör så att när man klickar på en lista med kunder så uppdateras konton.
      */
@@ -220,7 +219,7 @@ public class GUImain extends JFrame implements ActionListener {
     menuItemExist.addActionListener((ActionEvent event) -> {
       System.exit(0);
     });
-    
+
     menuItem.addActionListener((ActionEvent event) -> {
       GUImain newBank = new GUImain();
     });
@@ -340,9 +339,9 @@ public class GUImain extends JFrame implements ActionListener {
     String lastF = lastnameField.getText();
     String pNrF = pNrField.getText();
     String customerData;
-    
-    //REgex kopierades från
-    //https://stackoverflow.com/questions/18590901/check-if-a-string-contains-numbers-java?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+
+    // REgex kopierades från
+    // https://stackoverflow.com/questions/18590901/check-if-a-string-contains-numbers-java?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
     if (nameF.matches(".*\\d+.*") || lastF.matches(".*\\d+.*")) {
       JOptionPane.showMessageDialog(null, "Names can't contain integers.");
       return;
@@ -477,8 +476,8 @@ public class GUImain extends JFrame implements ActionListener {
         logic.deleteCustomer(pNr);
         customerModel.removeElementAt(selectedCustomerIndex);
         // Tar bort all data från tables som är relevant för kontot.
-        for(String pNrs: enteredpNrs) {
-          if(pNrs == pNr) {
+        for (String pNrs : enteredpNrs) {
+          if (pNrs == pNr) {
             enteredpNrs.remove(pNr);
           }
         }
@@ -550,8 +549,8 @@ public class GUImain extends JFrame implements ActionListener {
       String nameF = nameField.getText();
       String lastF = lastnameField.getText();
       String pNrF = logic.getpNrAt(position);
-      String customerData =  nameF+ " " + lastF + " " + pNrF;
-      
+      String customerData = nameF + " " + lastF + " " + pNrF;
+
       if (nameF.matches(".*\\d+.*") || lastF.matches(".*\\d+.*")) {
         JOptionPane.showMessageDialog(null, "Names can't contain integers.");
         return;
@@ -561,7 +560,7 @@ public class GUImain extends JFrame implements ActionListener {
         JOptionPane.showMessageDialog(null, "You can't have an empty field.");
         return;
       }
-      
+
       logic.changeCustomerName(nameF, lastF, pNrF);
       customerModel.removeElementAt(position);
       customerModel.insertElementAt(customerData, position);
@@ -596,7 +595,7 @@ public class GUImain extends JFrame implements ActionListener {
   private void clearAccounts() {
     accountModel.setRowCount(0);
   }
-  
+
   /**
    * Rensar inpufälten, transaktionerna och konton.
    * 

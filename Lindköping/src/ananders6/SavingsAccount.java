@@ -98,7 +98,7 @@ public class SavingsAccount extends Account {
    * @param void
    * @return double
    */
- 
+
   @Override
   public double calculateInterest() {
     return (this.balance * this.interestRate / 100.0);
