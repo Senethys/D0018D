@@ -1,5 +1,5 @@
 package ananders6;
-
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -8,8 +8,9 @@ import java.util.ArrayList;
  * @author Anna Andersson, ananders-6
  */
 
-public class BankLogic {
+public class BankLogic implements Serializable {
 
+  private static final long serialVersionUID = 1L;
   private ArrayList<Customer> CustomerList = new ArrayList<Customer>();
 
   public BankLogic() {
@@ -76,7 +77,6 @@ public class BankLogic {
           break;
         }
       }
-
       if (!exists) {
         Customer NewCustomer = new Customer(name, surname, pNr);
         CustomerList.add(NewCustomer);
@@ -87,7 +87,37 @@ public class BankLogic {
       CustomerList.add(NewCustomer);
       result = true;
     }
+    return result;
+  }
+  
+  /**
+   * Lägger till ett customer objekt till ArrayList.
+   * Denna metod används för serialisring.
+   * 
+   * @param Customer
+   * @return boolean
+   */
+  public boolean addExistingCustomer(Customer customer) {
 
+    boolean result = false;
+    boolean exists = false;
+    // If customers exists
+    if (CustomerList.size() != 0) {
+      // Scan after matching pNr
+      for (int i = 0; i < CustomerList.size(); i++) {
+        if (customer.getCustomerpNr().equals(CustomerList.get(i).getCustomerpNr())) {
+          exists = true;
+          break;
+        }
+      }
+      if (!exists) {
+        CustomerList.add(customer);
+        result = true;
+      }
+    } else {
+      CustomerList.add(customer);
+      result = true;
+    }
     return result;
   }
 

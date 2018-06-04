@@ -5,6 +5,12 @@ import javax.swing.table.DefaultTableModel;
 import java.util.*;
 import java.util.List;
 import java.awt.event.*;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.awt.*;
 
 /**
@@ -205,24 +211,26 @@ public class GUImain extends JFrame implements ActionListener {
       }
     });
   }
-  
+
   /**
-   * Skapar en meny för programmet. 
+   * Skapar en meny för programmet.
+   * 
    * @param JFrame
    */
+  @SuppressWarnings("resource")
   public void buildMenu(JFrame frame) {
 
     JMenuBar menubar = new JMenuBar();
     JMenu menu = new JMenu("Menu");
-    JMenuItem menuItem = new JMenuItem("New Bank");
-    JMenuItem menuItem1 = new JMenuItem("Import Account Data");
-    JMenuItem menuItem2 = new JMenuItem("Export Account Data");
-    JMenuItem menuItem3 = new JMenuItem("Import Bank Data");
-    JMenuItem menuItem4 = new JMenuItem("Export Bank Data");
+    JMenuItem menuItem = new JMenuItem("New Bank Window");
+    JMenuItem exportTransaction = new JMenuItem("Export Transaction Data");
+    JMenuItem importBankData = new JMenuItem("Import Bank Data");
+    JMenuItem exportBankData = new JMenuItem("Export Bank Data");
 
     JMenuItem menuItemExist = new JMenuItem("Exit");
 
     menuItemExist.setMnemonic(KeyEvent.VK_E);
+
     menuItemExist.addActionListener((ActionEvent event) -> {
       System.exit(0);
     });
@@ -231,11 +239,78 @@ public class GUImain extends JFrame implements ActionListener {
       GUImain newBank = new GUImain();
     });
 
+    exportTransaction.addActionListener((ActionEvent event) -> {
+
+    });
+    
+    //EXPORTING DATA _______________________________________
+    exportBankData.addActionListener((ActionEvent event) -> {
+      
+      ArrayList<Customer> CustomerListFromBank = new ArrayList<Customer>();
+      
+      for(int i = 0; i < customerList.getModel().getSize(); i++) {
+        String selectedCustomerpNr = customerList.getSelectedValue().toString().split(" ")[2];
+        Customer customer = logic.matchCustomer(selectedCustomerpNr);
+        CustomerListFromBank.add(customer);
+      }
+
+      try {
+        FileOutputStream file = new FileOutputStream("CustomersFile.dat", true);
+        ObjectOutputStream BankOutFile = new ObjectOutputStream(file);
+        BankOutFile.writeObject(CustomerListFromBank);
+        BankOutFile.close();
+        file.close();
+      } catch (FileNotFoundException e) {
+        e.printStackTrace();
+      } catch (IOException e) { 
+        e.printStackTrace();
+      }
+
+    });
+
+    
+    //IMPORTING DATA _______________________________________
+
+    importBankData.addActionListener((ActionEvent event) -> {
+
+      ArrayList<Customer> CustomerListFromFile = new ArrayList<Customer>();
+      
+      try {
+
+        FileInputStream file = new FileInputStream("CustomersFile.dat");
+        ObjectInputStream allCustomers = new ObjectInputStream(file);
+        
+        ArrayList<Customer> readCustomer = (ArrayList<Customer>)allCustomers.readObject();
+        
+        for(int i = 0; i < readCustomer.size(); i++) {
+          
+          Customer customer = (Customer) readCustomer.get(i);
+          String customerData = customer.getCustomerInfo();
+          customerModel.addElement(customerData);
+          logic.addExistingCustomer(customer);
+          allCustomers.close();
+          file.close();
+        }
+        
+
+      } catch (IOException e1) {
+        e1.printStackTrace();
+  
+      } catch (ClassNotFoundException e) {
+
+        e.printStackTrace();
+      }
+
+      
+
+  });
+
+
+
     menu.add(menuItem);
-    menu.add(menuItem1);
-    menu.add(menuItem2);
-    menu.add(menuItem3);
-    menu.add(menuItem4);
+    menu.add(exportTransaction);
+    menu.add(importBankData);
+    menu.add(exportBankData);
     menu.add(menuItemExist);
     menubar.add(menu);
 
@@ -380,7 +455,6 @@ public class GUImain extends JFrame implements ActionListener {
     // }
 
     else {
-
       if (enteredpNrs.contains(pNrF) == true) {
         JOptionPane.showMessageDialog(null, "This personal number already exists.");
         return;

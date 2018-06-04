@@ -1,5 +1,5 @@
 package ananders6;
-
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -8,8 +8,9 @@ import java.util.ArrayList;
  * @author Anna Andersson, ananders-6
  */
 
-public class Customer {
+public class Customer implements Serializable {
 
+  private static final long serialVersionUID = 1L;
   private String             name;
   private String             lastname;
   private String             ssn;
