@@ -217,7 +217,7 @@ public class GUImain extends JFrame implements ActionListener {
    * 
    * @param JFrame
    */
-  @SuppressWarnings("resource")
+
   public void buildMenu(JFrame frame) {
 
     JMenuBar menubar = new JMenuBar();
@@ -242,70 +242,83 @@ public class GUImain extends JFrame implements ActionListener {
     exportTransaction.addActionListener((ActionEvent event) -> {
 
     });
-    
-    //EXPORTING DATA _______________________________________
+
+    // EXPORTING DATA TO FILE _______________________________________
     exportBankData.addActionListener((ActionEvent event) -> {
-      
-      ArrayList<Customer> CustomerListFromBank = new ArrayList<Customer>();
-      
-      for(int i = 0; i < customerList.getModel().getSize(); i++) {
-        String selectedCustomerpNr = customerList.getSelectedValue().toString().split(" ")[2];
-        Customer customer = logic.matchCustomer(selectedCustomerpNr);
-        CustomerListFromBank.add(customer);
-      }
+      ArrayList<Customer> customers = new ArrayList<>();
 
       try {
-        FileOutputStream file = new FileOutputStream("CustomersFile.dat", true);
+        FileOutputStream file = new FileOutputStream("CustomersFile.dat");
         ObjectOutputStream BankOutFile = new ObjectOutputStream(file);
-        BankOutFile.writeObject(CustomerListFromBank);
+
+        for (int i = 0; i < customerList.getModel().getSize(); i++) {
+          String selectedCustomerpNr = customerList.getModel().getElementAt(i).toString().split(" ")[2];
+          System.out.println("EXPORTING CUSTOMER: " + selectedCustomerpNr);
+          Customer customer = logic.matchCustomer(selectedCustomerpNr);
+          customers.add(customer);
+        }
+        BankOutFile.writeObject(customers);
         BankOutFile.close();
         file.close();
       } catch (FileNotFoundException e) {
         e.printStackTrace();
-      } catch (IOException e) { 
+      } catch (IOException e) {
         e.printStackTrace();
+      }
+    });
+
+    // IMPORTING DATA _______________________________________
+    importBankData.addActionListener((
+
+        ActionEvent event) -> {
+
+      try {
+        FileInputStream file = new FileInputStream("CustomersFile.dat");
+        ObjectInputStream allCustomers = new ObjectInputStream(file);
+        ArrayList<Customer> customersInFile = new ArrayList<>();
+        customersInFile = (ArrayList<Customer>) allCustomers.readObject();
+        int customerAmount = logic.getAmountOfCustomers();
+        // Import only those customers who are not in the bank.
+
+        // if there are customers in the file
+        if (!customersInFile.isEmpty() && customerAmount != 0) {
+
+          // For every customers in the file
+          for (int i = 0; i < customersInFile.size(); i++) {
+            Customer customer = customersInFile.get(i);
+            System.out.println(customerAmount);
+            System.out.println(customersInFile.size());
+
+            // if it is not in the bank then add it.
+            if (logic.matchCustomer(customer.getCustomerpNr()) == null) {
+              String customerData = customer.getCustomerInfo();
+              System.out.println("IMPORTING CUSTOMER: " + customerData);
+              customerModel.addElement(customerData);
+              logic.addExistingCustomer(customersInFile.get(i));
+            }
+          }
+        } else if (!customersInFile.isEmpty() && customerAmount == 0) {
+          for (int i = 0; i < customersInFile.size(); i++) {
+            Customer customer = customersInFile.get(i);
+            if (logic.matchCustomer(customer.getCustomerpNr()) == null) {
+              String customerData = customer.getCustomerInfo();
+              System.out.println("IMPORTING CUSTOMER: " + customerData);
+              customerModel.addElement(customerData);
+              logic.addExistingCustomer(customersInFile.get(i));
+            }
+          }
+        }
+      } catch (IOException e1) {
+        System.out.println("IOException!");
+        System.out.println("There is no import file");
+        e1.printStackTrace();
+
+      } catch (ClassNotFoundException e2) {
+        System.out.println("ClassNotFoundException");
+        e2.printStackTrace();
       }
 
     });
-
-    
-    //IMPORTING DATA _______________________________________
-
-    importBankData.addActionListener((ActionEvent event) -> {
-
-      ArrayList<Customer> CustomerListFromFile = new ArrayList<Customer>();
-      
-      try {
-
-        FileInputStream file = new FileInputStream("CustomersFile.dat");
-        ObjectInputStream allCustomers = new ObjectInputStream(file);
-        
-        ArrayList<Customer> readCustomer = (ArrayList<Customer>)allCustomers.readObject();
-        
-        for(int i = 0; i < readCustomer.size(); i++) {
-          
-          Customer customer = (Customer) readCustomer.get(i);
-          String customerData = customer.getCustomerInfo();
-          customerModel.addElement(customerData);
-          logic.addExistingCustomer(customer);
-          allCustomers.close();
-          file.close();
-        }
-        
-
-      } catch (IOException e1) {
-        e1.printStackTrace();
-  
-      } catch (ClassNotFoundException e) {
-
-        e.printStackTrace();
-      }
-
-      
-
-  });
-
-
 
     menu.add(menuItem);
     menu.add(exportTransaction);
@@ -317,6 +330,7 @@ public class GUImain extends JFrame implements ActionListener {
     frame.setJMenuBar(menubar);
     frame.setSize(400, 400);
     frame.setVisible(true);
+
   }
 
   // UI LOGIC. This activated the functions below.

@@ -56,6 +56,20 @@ public class BankLogic implements Serializable {
     }
     return results;
   }
+  
+  
+  /**
+   * Returnerar antalet kunder på banken.
+   * alla kunder.
+   * 
+   * @param void
+   * @return int
+   */
+  public int getAmountOfCustomers() {
+
+
+    return this.CustomerList.size();
+  }
 
   /**
    * Skapar ett Customer objekt och lägger den i en ArrayList
