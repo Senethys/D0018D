@@ -11,6 +11,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
+import java.lang.reflect.Array;
 import java.awt.*;
 
 /**
@@ -207,6 +209,7 @@ public class GUImain extends JFrame implements ActionListener {
         if (e.getClickCount() == 1) {
           clearAccounts();
           showAccounts();
+          clearTransactions();
         }
       }
     });
@@ -223,10 +226,10 @@ public class GUImain extends JFrame implements ActionListener {
     JMenuBar menubar = new JMenuBar();
     JMenu menu = new JMenu("Menu");
     JMenuItem menuItem = new JMenuItem("New Bank Window");
-    JMenuItem exportTransaction = new JMenuItem("Export Transaction Data");
+    JMenuItem exportTransaction = new JMenuItem("Export Transaction");
+    JMenuItem exportTransactions = new JMenuItem("Export All Transactions");
     JMenuItem importBankData = new JMenuItem("Import Bank Data");
     JMenuItem exportBankData = new JMenuItem("Export Bank Data");
-
     JMenuItem menuItemExist = new JMenuItem("Exit");
 
     menuItemExist.setMnemonic(KeyEvent.VK_E);
@@ -239,75 +242,61 @@ public class GUImain extends JFrame implements ActionListener {
       GUImain newBank = new GUImain();
     });
 
-    exportTransaction.addActionListener((ActionEvent event) -> {
-
-    });
-
-    // EXPORTING DATA TO FILE _______________________________________
-    exportBankData.addActionListener((ActionEvent event) -> {
-      ArrayList<Customer> customers = new ArrayList<>();
+    // EXPORT TRANSACTIONS TO FILE
+    exportTransactions.addActionListener((ActionEvent event) -> {
+      ArrayList<Transaction> transcations = new ArrayList<>();
+      String[] transcationData;
+      int accountID = Integer.parseInt((String) accountTable.getValueAt(accountTable.getSelectedRow(), 0));
+      String selectedCustomerpNr = customerList.getSelectedValue().toString().split(" ")[2];
+      Customer customer = logic.matchCustomer(selectedCustomerpNr);
+      Account account = customer.matchAccount(accountID);
+      transcations = account.getAccountTransactions();
 
       try {
-        FileOutputStream file = new FileOutputStream("CustomersFile.dat");
-        ObjectOutputStream BankOutFile = new ObjectOutputStream(file);
-
-        for (int i = 0; i < customerList.getModel().getSize(); i++) {
-          String selectedCustomerpNr = customerList.getModel().getElementAt(i).toString().split(" ")[2];
-          System.out.println("EXPORTING CUSTOMER: " + selectedCustomerpNr);
-          Customer customer = logic.matchCustomer(selectedCustomerpNr);
-          customers.add(customer);
+        PrintWriter outFile = new PrintWriter("transaction.txt");
+        outFile.println("Ten latest transactions for account number \n" + account.getAccountNumber());
+        for (int i = 10; i > 0; i--) {
+          transcationData = transcations.get(i - 1).getTransacionDetails().split(" ");
+          recordTransaction(transcationData, outFile);
         }
-        BankOutFile.writeObject(customers);
-        BankOutFile.close();
-        file.close();
+        outFile.close();
       } catch (FileNotFoundException e) {
-        e.printStackTrace();
-      } catch (IOException e) {
         e.printStackTrace();
       }
     });
 
-    // IMPORTING DATA _______________________________________
+    // EXPORT TRANSACTION TO FILE
+    exportTransaction.addActionListener((ActionEvent event) -> {
+      String[] transcationData;
+      transcationData = getSelectedTransaction();
+      PrintWriter outFile;
+      try {
+        outFile = new PrintWriter("transaction.txt");
+        recordTransaction(transcationData, outFile);
+        outFile.close();
+      } catch (FileNotFoundException e) {
+        e.printStackTrace();
+      }
+    });
+
+    // EXPORTING DATA TO FILE
+    exportBankData.addActionListener((ActionEvent event) -> {
+      ArrayList<Customer> customers = new ArrayList<>();
+      addToFile(customers);
+
+    });
+
+    // IMPORTING DATA
     importBankData.addActionListener((
 
         ActionEvent event) -> {
-
       try {
         FileInputStream file = new FileInputStream("CustomersFile.dat");
         ObjectInputStream allCustomers = new ObjectInputStream(file);
         ArrayList<Customer> customersInFile = new ArrayList<>();
         customersInFile = (ArrayList<Customer>) allCustomers.readObject();
-        int customerAmount = logic.getAmountOfCustomers();
-        // Import only those customers who are not in the bank.
+        addToBank(customersInFile);
 
-        // if there are customers in the file
-        if (!customersInFile.isEmpty() && customerAmount != 0) {
-
-          // For every customers in the file
-          for (int i = 0; i < customersInFile.size(); i++) {
-            Customer customer = customersInFile.get(i);
-            System.out.println(customerAmount);
-            System.out.println(customersInFile.size());
-
-            // if it is not in the bank then add it.
-            if (logic.matchCustomer(customer.getCustomerpNr()) == null) {
-              String customerData = customer.getCustomerInfo();
-              System.out.println("IMPORTING CUSTOMER: " + customerData);
-              customerModel.addElement(customerData);
-              logic.addExistingCustomer(customersInFile.get(i));
-            }
-          }
-        } else if (!customersInFile.isEmpty() && customerAmount == 0) {
-          for (int i = 0; i < customersInFile.size(); i++) {
-            Customer customer = customersInFile.get(i);
-            if (logic.matchCustomer(customer.getCustomerpNr()) == null) {
-              String customerData = customer.getCustomerInfo();
-              System.out.println("IMPORTING CUSTOMER: " + customerData);
-              customerModel.addElement(customerData);
-              logic.addExistingCustomer(customersInFile.get(i));
-            }
-          }
-        }
       } catch (IOException e1) {
         System.out.println("IOException!");
         System.out.println("There is no import file");
@@ -321,9 +310,10 @@ public class GUImain extends JFrame implements ActionListener {
     });
 
     menu.add(menuItem);
-    menu.add(exportTransaction);
     menu.add(importBankData);
     menu.add(exportBankData);
+    menu.add(exportTransaction);
+    menu.add(exportTransactions);
     menu.add(menuItemExist);
     menubar.add(menu);
 
@@ -331,6 +321,31 @@ public class GUImain extends JFrame implements ActionListener {
     frame.setSize(400, 400);
     frame.setVisible(true);
 
+  }
+
+  private String[] getSelectedTransaction() {
+    String[] transaction = null;
+    int transactionIndex = transactionTable.getSelectedRow();
+    String transactionDate = (String) transactionTable.getValueAt(transactionIndex, 0);
+    String transactionTime = (String) transactionTable.getValueAt(transactionIndex, 1);
+    String transactionAmount = (String) transactionTable.getValueAt(transactionIndex, 2);
+    String balance = (String) transactionTable.getValueAt(transactionIndex, 3);
+    transaction[0] = transactionDate;
+    transaction[1] = transactionTime;
+    transaction[2] = transactionAmount;
+    transaction[3] = balance;
+    return transaction;
+  }
+
+  private void recordTransaction(String[] transcationData, PrintWriter out) {
+    String[] transactionInfo = transactionColumns;
+    out.println("========================================================");
+    out.print("|");
+    out.println(
+        transactionInfo[0] + "\t\t" + transactionInfo[1] + "\t\t" + transactionInfo[2] + "\t\t" + transactionInfo[3]);
+    out.print("|");
+    out.println(
+        transcationData[0] + "\t" + transcationData[1] + "\t" + transcationData[2] + "\t\t" + transcationData[3]);
   }
 
   // UI LOGIC. This activated the functions below.
@@ -395,10 +410,12 @@ public class GUImain extends JFrame implements ActionListener {
     String accountData;
     List<String> AccounItems;
     int selectedIndex = customerList.getSelectedIndex();
+    // Get accounts for the customer.
     if (selectedIndex != -1) {
       selectedCustomerpNr = customerList.getSelectedValue().toString().split(" ")[2];
       customer = logic.matchCustomer(selectedCustomerpNr);
       accounts = customer.getAllCustomerAccountInfo();
+      // For each account add to model.
       for (int i = accounts.size(); 0 < i; i--) {
         accountAsString = accounts.get(i - 1);
         accountAsList = accountAsString.split(" ");
@@ -460,13 +477,6 @@ public class GUImain extends JFrame implements ActionListener {
       JOptionPane.showMessageDialog(null, "Personal number must be an integer.");
       return;
     }
-
-    // Ta bort för att få svensk standard för personnummer.
-    // if(pNrF.length() != 10) {
-    // JOptionPane.showMessageDialog(null, "Personal number must be 10 number
-    // long.");
-    // return;
-    // }
 
     else {
       if (enteredpNrs.contains(pNrF) == true) {
@@ -557,8 +567,8 @@ public class GUImain extends JFrame implements ActionListener {
       List<String> accountItems = Arrays.asList(selectedAccountItems.split(" "));
       accountID = Integer.parseInt(accountItems.get(0));
       selectedCustomerItems = customerModel.getElementAt(selectedCustomerIndex).toString();
-      List<String> cutomeritems = Arrays.asList(selectedCustomerItems.split(" "));
-      pNr = cutomeritems.get(2);
+      List<String> customerItems = Arrays.asList(selectedCustomerItems.split(" "));
+      pNr = customerItems.get(2);
       Customer c = logic.matchCustomer(pNr);
       c.closeAccount(accountID);
       this.enteredpNrs.remove(String.valueOf(pNr));
@@ -710,6 +720,51 @@ public class GUImain extends JFrame implements ActionListener {
     pNrField.setText("");
     transactionModel.setRowCount(0);
     accountModel.setRowCount(0);
+  }
+
+  public void addToBank(ArrayList<Customer> customersInFile) {
+    int customerAmount = logic.getAmountOfCustomers();
+    // Import only those customers who are not in the bank.
+
+    // if there are customers in the file
+    if (!customersInFile.isEmpty() && customerAmount != 0 || customerAmount == 0) {
+
+      // For every customers in the file
+      for (int i = 0; i < customersInFile.size(); i++) {
+        Customer customer = customersInFile.get(i);
+        System.out.println(customerAmount);
+        System.out.println(customersInFile.size());
+
+        // if it is not in the bank then add it.
+        if (logic.matchCustomer(customer.getCustomerpNr()) == null) {
+          String customerData = customer.getCustomerInfo();
+          System.out.println("IMPORTING CUSTOMER: " + customerData);
+          customerModel.addElement(customerData);
+          logic.addExistingCustomer(customersInFile.get(i));
+        }
+      }
+    }
+  }
+
+  public void addToFile(ArrayList<Customer> customers) {
+    try {
+      FileOutputStream file = new FileOutputStream("CustomersFile.dat");
+      ObjectOutputStream BankOutFile = new ObjectOutputStream(file);
+
+      for (int i = 0; i < customerList.getModel().getSize(); i++) {
+        String selectedCustomerpNr = customerList.getModel().getElementAt(i).toString().split(" ")[2];
+        System.out.println("EXPORTING CUSTOMER: " + selectedCustomerpNr);
+        Customer customer = logic.matchCustomer(selectedCustomerpNr);
+        customers.add(customer);
+      }
+      BankOutFile.writeObject(customers);
+      BankOutFile.close();
+      file.close();
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   /**
