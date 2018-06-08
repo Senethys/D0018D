@@ -13,11 +13,11 @@ import java.util.Date;
 
 public class Transaction implements Serializable {
 
-  private static final long serialVersionUID = 1L;
-  private double balance = 0.0;
-  private String pattern = "yyyy-MM-dd HH:mm:ss";
-  private double amount;
-  private String TransactionDetails;
+  private static final long serialVersionUID = 21L;
+  private double            balance          = 0.0;
+  private String            pattern          = "yyyy-MM-dd HH:mm:ss";
+  private double            amount;
+  private String            TransactionDetails;
 
   public Transaction(double amount, double balance) {
     this.balance = balance;

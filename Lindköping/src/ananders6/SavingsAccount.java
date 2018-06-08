@@ -10,10 +10,10 @@ import java.io.Serializable;
 
 public class SavingsAccount extends Account implements Serializable {
 
-  private static final long serialVersionUID = 1L;
-  private String  type             = "Sparkonto";
-  private boolean usedFreeWithdraw = false;
-  private double  interestRate     = 1.0;
+  private static final long serialVersionUID = 41L;
+  private String            type             = "Sparkonto";
+  private boolean           usedFreeWithdraw = false;
+  private double            interestRate     = 1.0;
 
   public SavingsAccount() {
   }

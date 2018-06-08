@@ -1,18 +1,13 @@
 package ananders6;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
+
 import java.util.*;
 import java.util.List;
 import java.awt.event.*;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
-import java.lang.reflect.Array;
+import java.io.*;
 import java.awt.*;
 
 /**
@@ -70,10 +65,6 @@ public class GUImain extends JFrame implements ActionListener {
     // CUSTOMERS
     customerList = new JList<Object>();
     customerList.setModel(customerModel);
-
-    /**
-     * Stänger av cell-editing.
-     */
 
     // ACOUNTS
     accountTable = new JTable() {
@@ -220,7 +211,6 @@ public class GUImain extends JFrame implements ActionListener {
    * 
    * @param JFrame
    */
-
   public void buildMenu(JFrame frame) {
 
     JMenuBar menubar = new JMenuBar();
@@ -242,68 +232,104 @@ public class GUImain extends JFrame implements ActionListener {
       GUImain newBank = new GUImain();
     });
 
-    // EXPORT TRANSACTIONS TO FILE
+    // ***EXPORT TRANSACTIONS TO FILE***
     exportTransactions.addActionListener((ActionEvent event) -> {
+
       ArrayList<Transaction> transcations = new ArrayList<>();
       String[] transcationData;
-      int accountID = Integer.parseInt((String) accountTable.getValueAt(accountTable.getSelectedRow(), 0));
-      String selectedCustomerpNr = customerList.getSelectedValue().toString().split(" ")[2];
-      Customer customer = logic.matchCustomer(selectedCustomerpNr);
-      Account account = customer.matchAccount(accountID);
-      transcations = account.getAccountTransactions();
+      Account account;
+      JFileChooser fileChooser;
+      PrintWriter outFile;
+      transcations = getSelectedTransactions();
+      account = getSelectAccount();
 
       try {
-        PrintWriter outFile = new PrintWriter("transaction.txt");
-        outFile.println("Ten latest transactions for account number \n" + account.getAccountNumber());
-        for (int i = 10; i > 0; i--) {
-          transcationData = transcations.get(i - 1).getTransacionDetails().split(" ");
-          recordTransaction(transcationData, outFile);
+
+        fileChooser = initiateFileChooser(true);
+        if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+          outFile = new PrintWriter(fileChooser.getSelectedFile() + ".txt");
+          outFile.println("Ten latest transactions for account number \n" + account.getAccountNumber());
+
+          try {
+
+            for (int i = 10; i > 0; i--) {
+              transcationData = transcations.get(i - 1).getTransacionDetails().split(" ");
+              recordTransaction(transcationData, outFile);
+            }
+            outFile.close();
+          } catch (ArrayIndexOutOfBoundsException e2) {
+            System.out.println("There are less than 10 transactions but it's ok.");
+          }
         }
-        outFile.close();
       } catch (FileNotFoundException e) {
         e.printStackTrace();
       }
     });
 
-    // EXPORT TRANSACTION TO FILE
+    // ***EXPORT ONE TRANSACTION TO FILE***
     exportTransaction.addActionListener((ActionEvent event) -> {
       String[] transcationData;
-      transcationData = getSelectedTransaction();
-      PrintWriter outFile;
-      try {
-        outFile = new PrintWriter("transaction.txt");
-        recordTransaction(transcationData, outFile);
-        outFile.close();
-      } catch (FileNotFoundException e) {
-        e.printStackTrace();
+      JFileChooser fileChooser = initiateFileChooser(true);
+
+      if (transactionTable.getSelectedRow() != -1) {
+        transcationData = getSelectedTransaction();
+        try {
+          if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+            PrintWriter outFile = new PrintWriter(fileChooser.getSelectedFile() + ".txt");
+            recordTransaction(transcationData, outFile);
+            outFile.close();
+          }
+        } catch (FileNotFoundException e) {
+          e.printStackTrace();
+        }
+      } else {
+        JOptionPane.showMessageDialog(null, "Select a transaction you wish to export.");
       }
+
     });
 
-    // EXPORTING DATA TO FILE
+    // ***EXPORTING DATA TO FILE***
     exportBankData.addActionListener((ActionEvent event) -> {
       ArrayList<Customer> customers = new ArrayList<>();
       addToFile(customers);
 
     });
 
-    // IMPORTING DATA
+    // ***IMPORT BANK DATA***
     importBankData.addActionListener((
 
         ActionEvent event) -> {
+      JFileChooser fileChooser;
+
       try {
-        FileInputStream file = new FileInputStream("CustomersFile.dat");
-        ObjectInputStream allCustomers = new ObjectInputStream(file);
+        ObjectInputStream allCustomers;
+        File selectedFile;
         ArrayList<Customer> customersInFile = new ArrayList<>();
-        customersInFile = (ArrayList<Customer>) allCustomers.readObject();
-        addToBank(customersInFile);
+        int clickResult = 0;
+        fileChooser = initiateFileChooser(false);
+        fileChooser.showOpenDialog(this);
+
+        if (clickResult == JFileChooser.APPROVE_OPTION) {
+          selectedFile = fileChooser.getSelectedFile();
+          allCustomers = new ObjectInputStream(new FileInputStream(selectedFile));
+          Account.setlastAccountNumber(allCustomers.readInt());
+          customersInFile = (ArrayList<Customer>) allCustomers.readObject();
+          addToBank(customersInFile);
+        }
+
+      } catch (EOFException e0) {
+        System.out.println("This file was corrupted, or it cannot be read.");
+        JOptionPane.showMessageDialog(null, "This file was corrupted, or it cannot be read.");
+        e0.printStackTrace();
 
       } catch (IOException e1) {
-        System.out.println("IOException!");
-        System.out.println("There is no import file");
+        System.out.println("There is no import file.");
+        JOptionPane.showMessageDialog(null, "There is no import file.");
+
         e1.printStackTrace();
 
       } catch (ClassNotFoundException e2) {
-        System.out.println("ClassNotFoundException");
+        System.out.println("The data you are trying to import is not the correct one.");
         e2.printStackTrace();
       }
 
@@ -323,9 +349,68 @@ public class GUImain extends JFrame implements ActionListener {
 
   }
 
+  /**
+   * Returnerar filechooser, ett fönster för att välja fil att spara till eller ta
+   * data från. Om input är true så kommer txt filechooser filter att skapas.
+   * Annars .dat
+   * 
+   * @param Boolean
+   * @return JFileChooser
+   */
+  private JFileChooser initiateFileChooser(Boolean text) {
+
+    JFileChooser fileChooser = new JFileChooser();
+    FileNameExtensionFilter filter;
+
+    if (text) {
+      filter = new FileNameExtensionFilter(".txt", "txt", "text");
+    } else {
+      filter = new FileNameExtensionFilter(".dat", "dat", "datfile");
+    }
+
+    fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+    fileChooser.setFileFilter(filter);
+    fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
+    return fileChooser;
+
+  }
+
+  /**
+   * Returnerar ett Account object som har valts i listan av användaren. Behövs
+   * för att kunna välja transactioner och exportera.
+   * 
+   * @return Account
+   */
+  private Account getSelectAccount() {
+    int accountID = Integer.parseInt((String) accountTable.getValueAt(accountTable.getSelectedRow(), 0));
+    String selectedCustomerpNr = customerList.getSelectedValue().toString().split(" ")[2];
+    Customer customer = logic.matchCustomer(selectedCustomerpNr);
+    Account account = customer.matchAccount(accountID);
+    return account;
+  }
+
+  /**
+   * Returnerar ett en ArrayList med alla transacktionsobject för en ett valt
+   * account. Används för att b.la. exportera transactioner.
+   * 
+   * @return ArrayList<Transaction>
+   */
+  private ArrayList<Transaction> getSelectedTransactions() {
+    ArrayList<Transaction> transcations = new ArrayList<>();
+    Account account = getSelectAccount();
+    transcations = account.getAccountTransactions();
+    return transcations;
+  }
+
+  /**
+   * Returnerar en viss transaction i sträng form. Används för att exportera en
+   * typ av transaktion.
+   * 
+   * @return String[]
+   */
   private String[] getSelectedTransaction() {
-    String[] transaction = null;
     int transactionIndex = transactionTable.getSelectedRow();
+    String[] transaction = new String[4];
     String transactionDate = (String) transactionTable.getValueAt(transactionIndex, 0);
     String transactionTime = (String) transactionTable.getValueAt(transactionIndex, 1);
     String transactionAmount = (String) transactionTable.getValueAt(transactionIndex, 2);
@@ -337,6 +422,12 @@ public class GUImain extends JFrame implements ActionListener {
     return transaction;
   }
 
+  /**
+   * Skriver in transactionsdata in en specificierad PrintWriter.
+   * 
+   * @param String[],
+   *          PrintWriter
+   */
   private void recordTransaction(String[] transcationData, PrintWriter out) {
     String[] transactionInfo = transactionColumns;
     out.println("========================================================");
@@ -348,7 +439,11 @@ public class GUImain extends JFrame implements ActionListener {
         transcationData[0] + "\t" + transcationData[1] + "\t" + transcationData[2] + "\t\t" + transcationData[3]);
   }
 
-  // UI LOGIC. This activated the functions below.
+  /**
+   * Logic delen för knapparna i GUI:n, förrutom listorna/tabellerna samt menyn.
+   * 
+   * @param ActionEvent
+   */
   public void actionPerformed(ActionEvent event) {
     String buttonText = event.getActionCommand();
 
@@ -519,7 +614,7 @@ public class GUImain extends JFrame implements ActionListener {
   }
 
   /**
-   * Slapar ett kredit-konto för en target kund och skriver in den i listan.
+   * Skapar ett kredit-konto för en target kund och skriver in den i listan.
    * 
    * @return void
    */
@@ -585,7 +680,6 @@ public class GUImain extends JFrame implements ActionListener {
         selectedCustomerItems = customerModel.getElementAt(selectedCustomerIndex).toString();
         List<String> items = Arrays.asList(selectedCustomerItems.split(" "));
         pNr = items.get(2);
-        System.out.println(pNr);
         logic.deleteCustomer(pNr);
         customerModel.removeElementAt(selectedCustomerIndex);
         // Tar bort all data från tables som är relevant för kontot.
@@ -647,7 +741,8 @@ public class GUImain extends JFrame implements ActionListener {
       m.setVisible(true);
       // Get account ID
     } catch (ArrayIndexOutOfBoundsException e) {
-      System.out.println("You have to select an account first.");
+      JOptionPane.showMessageDialog(null, "Select an account.");
+
     }
   }
 
@@ -722,8 +817,16 @@ public class GUImain extends JFrame implements ActionListener {
     accountModel.setRowCount(0);
   }
 
+  /**
+   * Läser in object som kommer från filen och kontrollerar att dessa redan inte
+   * finns in banken.
+   * 
+   * @param ArrayList<Customer>
+   */
   public void addToBank(ArrayList<Customer> customersInFile) {
     int customerAmount = logic.getAmountOfCustomers();
+    Customer customer;
+    String customerData;
     // Import only those customers who are not in the bank.
 
     // if there are customers in the file
@@ -731,14 +834,11 @@ public class GUImain extends JFrame implements ActionListener {
 
       // For every customers in the file
       for (int i = 0; i < customersInFile.size(); i++) {
-        Customer customer = customersInFile.get(i);
-        System.out.println(customerAmount);
-        System.out.println(customersInFile.size());
+        customer = customersInFile.get(i);
 
         // if it is not in the bank then add it.
         if (logic.matchCustomer(customer.getCustomerpNr()) == null) {
-          String customerData = customer.getCustomerInfo();
-          System.out.println("IMPORTING CUSTOMER: " + customerData);
+          customerData = customer.getCustomerInfo();
           customerModel.addElement(customerData);
           logic.addExistingCustomer(customersInFile.get(i));
         }
@@ -746,21 +846,39 @@ public class GUImain extends JFrame implements ActionListener {
     }
   }
 
+  /**
+   * Tar in en lista med customer object som skrivs in i en fil.
+   * 
+   * @return void
+   */
   public void addToFile(ArrayList<Customer> customers) {
-    try {
-      FileOutputStream file = new FileOutputStream("CustomersFile.dat");
-      ObjectOutputStream BankOutFile = new ObjectOutputStream(file);
 
-      for (int i = 0; i < customerList.getModel().getSize(); i++) {
-        String selectedCustomerpNr = customerList.getModel().getElementAt(i).toString().split(" ")[2];
-        System.out.println("EXPORTING CUSTOMER: " + selectedCustomerpNr);
-        Customer customer = logic.matchCustomer(selectedCustomerpNr);
-        customers.add(customer);
+    JFileChooser fileChooser = initiateFileChooser(false);
+    FileOutputStream file;
+    ObjectOutputStream BankOutFile;
+    String selectedCustomerpNr;
+    Customer customer;
+
+    try {
+
+      if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+
+        file = new FileOutputStream(fileChooser.getSelectedFile() + ".dat");
+        BankOutFile = new ObjectOutputStream(file);
+
+        for (int i = 0; i < customerList.getModel().getSize(); i++) {
+          selectedCustomerpNr = customerList.getModel().getElementAt(i).toString().split(" ")[2];
+          customer = logic.matchCustomer(selectedCustomerpNr);
+          customers.add(customer);
+        }
+        BankOutFile.writeInt(Account.getlastAccountNumber());
+        BankOutFile.writeObject(customers);
+        BankOutFile.close();
+        file.close();
+
       }
-      BankOutFile.writeObject(customers);
-      BankOutFile.close();
-      file.close();
     } catch (FileNotFoundException e) {
+      JOptionPane.showMessageDialog(null, "The file was not found.");
       e.printStackTrace();
     } catch (IOException e) {
       e.printStackTrace();

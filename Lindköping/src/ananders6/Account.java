@@ -1,5 +1,6 @@
 package ananders6;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -9,7 +10,9 @@ import java.util.ArrayList;
  * @author Anna Andersson, ananders-6
  */
 
-public abstract class Account {
+public abstract class Account implements Serializable {
+
+  private static final long        serialVersionUID  = 1L;
   protected double                 balance           = 0.0;
   protected ArrayList<Transaction> TransactionList   = new ArrayList<Transaction>();
   protected Transaction            transaction;
@@ -84,4 +87,23 @@ public abstract class Account {
    * @return void
    */
   public abstract void changeAccountType(String newType);
+
+  /**
+   * Returnerar senaste account nummer.
+   * 
+   * @return int
+   */
+  public static int getlastAccountNumber() {
+    return lastAccountNumber;
+  }
+
+  /**
+   * Sätter vars ifrån nästa account nummer ska starta.
+   * 
+   * @param int
+   * @return void
+   */
+  public static void setlastAccountNumber(int startFromAccountNumber) {
+    lastAccountNumber = startFromAccountNumber;
+  }
 }

@@ -1,4 +1,5 @@
 package ananders6;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -10,8 +11,8 @@ import java.util.ArrayList;
 
 public class BankLogic implements Serializable {
 
-  private static final long serialVersionUID = 1L;
-  private ArrayList<Customer> CustomerList = new ArrayList<Customer>();
+  private static final long   serialVersionUID = 231L;
+  private ArrayList<Customer> CustomerList     = new ArrayList<Customer>();
 
   public BankLogic() {
   }
@@ -56,17 +57,14 @@ public class BankLogic implements Serializable {
     }
     return results;
   }
-  
-  
+
   /**
-   * Returnerar antalet kunder på banken.
-   * alla kunder.
+   * Returnerar antalet kunder på banken. alla kunder.
    * 
    * @param void
    * @return int
    */
   public int getAmountOfCustomers() {
-
 
     return this.CustomerList.size();
   }
@@ -103,10 +101,10 @@ public class BankLogic implements Serializable {
     }
     return result;
   }
-  
+
   /**
-   * Lägger till ett customer objekt till ArrayList.
-   * Denna metod används för serialisring.
+   * Lägger till ett customer objekt till ArrayList. Denna metod används för
+   * serialisring.
    * 
    * @param Customer
    * @return boolean

@@ -1,6 +1,7 @@
 package ananders6;
+
 /**
- * Startar programmet. 
+ * Startar programmet.
  * 
  * @author Anna Andersson, ananders-6
  */

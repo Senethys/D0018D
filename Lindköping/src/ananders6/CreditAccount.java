@@ -11,11 +11,10 @@ import java.io.Serializable;
 
 public class CreditAccount extends Account implements Serializable {
 
-
-  private static final long serialVersionUID = 1L;
-  private String type         = "Kreditkonto";
-  private double creditLimit  = -5000.0;
-  private double interestRate = 0.5;
+  private static final long serialVersionUID = 15L;
+  private String            type             = "Kreditkonto";
+  private double            creditLimit      = -5000.0;
+  private double            interestRate     = 0.5;
 
   public CreditAccount() {
   }

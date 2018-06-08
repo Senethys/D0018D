@@ -21,7 +21,7 @@ import javax.swing.table.DefaultTableModel;
 
 public class MoneyClass extends JFrame implements ActionListener {
 
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 16L;
   private Account           account;
   private JPanel            moneyPanel;
   private JTextField        moneyField;
