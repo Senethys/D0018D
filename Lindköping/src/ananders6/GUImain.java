@@ -3,7 +3,6 @@ package ananders6;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
-
 import java.util.*;
 import java.util.List;
 import java.awt.event.*;
@@ -53,8 +52,6 @@ public class GUImain extends JFrame implements ActionListener {
 
   /**
    * Initinerar alla fält och modeller.
-   * 
-   * @author Anna Andersson, ananders-6
    */
 
   private void initiateInstanceVariables() {
@@ -216,9 +213,10 @@ public class GUImain extends JFrame implements ActionListener {
     JMenuBar menubar = new JMenuBar();
     JMenu menu = new JMenu("Menu");
     JMenuItem menuItem = new JMenuItem("New Bank Window");
+    JMenuItem importBankData = new JMenuItem("Import Bank Data");
+    JMenuItem displayTransactions = new JMenuItem("Show Transactions");
     JMenuItem exportTransaction = new JMenuItem("Export Transaction");
     JMenuItem exportTransactions = new JMenuItem("Export All Transactions");
-    JMenuItem importBankData = new JMenuItem("Import Bank Data");
     JMenuItem exportBankData = new JMenuItem("Export Bank Data");
     JMenuItem menuItemExist = new JMenuItem("Exit");
 
@@ -232,32 +230,94 @@ public class GUImain extends JFrame implements ActionListener {
       GUImain newBank = new GUImain();
     });
 
+    displayTransactions.addActionListener((ActionEvent event) -> {
+      JFileChooser fileChooser = initiateFileChooser(true);
+      JFrame newframe = new JFrame();
+      JPanel panel = null;
+
+      File infile;
+      BufferedReader textFile = null;
+      JTextArea textArea = null;
+
+      String currentLine;
+
+      newframe.setSize(300, 300);
+      newframe.setTitle("Transaction");
+      newframe.setLocation(100, 100);
+
+      newframe.setLayout(new FlowLayout());
+      panel = new JPanel(new FlowLayout());
+      textArea = new JTextArea();
+      textArea.setEditable(false);
+
+      textArea.setBounds(300, 300, 600, 600);
+      panel.setBounds(300, 300, 600, 600);
+      panel.add(textArea);
+      panel.setVisible(true);
+
+      newframe.setBounds(300, 300, 600, 600);
+      newframe.add(panel);
+      newframe.setVisible(true);
+
+      if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+        infile = fileChooser.getSelectedFile();
+        try {
+          textFile = new BufferedReader(new FileReader(infile));
+          try {
+            while ((currentLine = textFile.readLine()) != null) {
+              String[] results = currentLine.split("\t");
+              for (int i = 0; i < results.length; i++) {
+                if (!"".equals(results[i])) {
+                  textArea.append(results[i] + "\t");
+                }
+              }
+              textArea.append("\n");
+            }
+            textFile.close();
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
+        } catch (FileNotFoundException e) {
+          e.printStackTrace();
+        }
+      }
+    });
+
     // ***EXPORT TRANSACTIONS TO FILE***
     exportTransactions.addActionListener((ActionEvent event) -> {
 
+      int printAmountTransactions = 10;
       ArrayList<Transaction> transcations = new ArrayList<>();
       String[] transcationData;
       Account account;
       JFileChooser fileChooser;
       PrintWriter outFile;
+      File file;
       transcations = getSelectedTransactions();
       account = getSelectAccount();
 
       try {
-
         fileChooser = initiateFileChooser(true);
         if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+          file = fileChooser.getSelectedFile();
           outFile = new PrintWriter(fileChooser.getSelectedFile() + ".txt");
           outFile.println("Ten latest transactions for account number \n" + account.getAccountNumber());
 
           try {
 
-            for (int i = 10; i > 0; i--) {
-              transcationData = transcations.get(i - 1).getTransacionDetails().split(" ");
+            int amountOfTransactions = transcations.size();
+            int currentTransaction = 0;
+
+            for (int i = 0; i < amountOfTransactions; i++) {
+              transcationData = transcations.get(i).getTransacionDetails().split(" ");
               recordTransaction(transcationData, outFile);
+              currentTransaction++;
+              if (currentTransaction == 10) {
+                break;
+              }
             }
             outFile.close();
-          } catch (ArrayIndexOutOfBoundsException e2) {
+          } catch (IndexOutOfBoundsException e2) {
             System.out.println("There are less than 10 transactions but it's ok.");
           }
         }
@@ -270,14 +330,19 @@ public class GUImain extends JFrame implements ActionListener {
     exportTransaction.addActionListener((ActionEvent event) -> {
       String[] transcationData;
       JFileChooser fileChooser = initiateFileChooser(true);
+      PrintWriter outFile;
+      File file;
 
       if (transactionTable.getSelectedRow() != -1) {
         transcationData = getSelectedTransaction();
+
         try {
           if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
-            PrintWriter outFile = new PrintWriter(fileChooser.getSelectedFile() + ".txt");
+            file = fileChooser.getSelectedFile();
+            outFile = new PrintWriter(fileChooser.getSelectedFile() + ".txt");
             recordTransaction(transcationData, outFile);
             outFile.close();
+
           }
         } catch (FileNotFoundException e) {
           e.printStackTrace();
@@ -302,7 +367,7 @@ public class GUImain extends JFrame implements ActionListener {
       JFileChooser fileChooser;
 
       try {
-        ObjectInputStream allCustomers;
+        ObjectInputStream allCustomers = null;
         File selectedFile;
         ArrayList<Customer> customersInFile = new ArrayList<>();
         int clickResult = 0;
@@ -311,10 +376,14 @@ public class GUImain extends JFrame implements ActionListener {
 
         if (clickResult == JFileChooser.APPROVE_OPTION) {
           selectedFile = fileChooser.getSelectedFile();
-          allCustomers = new ObjectInputStream(new FileInputStream(selectedFile));
-          Account.setlastAccountNumber(allCustomers.readInt());
-          customersInFile = (ArrayList<Customer>) allCustomers.readObject();
-          addToBank(customersInFile);
+
+          try {
+            allCustomers = new ObjectInputStream(new FileInputStream(selectedFile));
+            Account.setlastAccountNumber(allCustomers.readInt());
+            customersInFile = (ArrayList<Customer>) allCustomers.readObject();
+            addToBank(customersInFile);
+          } catch (NullPointerException e) {
+          }
         }
 
       } catch (EOFException e0) {
@@ -325,17 +394,18 @@ public class GUImain extends JFrame implements ActionListener {
       } catch (IOException e1) {
         System.out.println("There is no import file.");
         JOptionPane.showMessageDialog(null, "There is no import file.");
-
         e1.printStackTrace();
 
       } catch (ClassNotFoundException e2) {
         System.out.println("The data you are trying to import is not the correct one.");
+        JOptionPane.showMessageDialog(null, "The data you are trying to import is not the correct one.");
         e2.printStackTrace();
       }
 
     });
 
     menu.add(menuItem);
+    menu.add(displayTransactions);
     menu.add(importBankData);
     menu.add(exportBankData);
     menu.add(exportTransaction);
@@ -382,7 +452,12 @@ public class GUImain extends JFrame implements ActionListener {
    * @return Account
    */
   private Account getSelectAccount() {
-    int accountID = Integer.parseInt((String) accountTable.getValueAt(accountTable.getSelectedRow(), 0));
+    int accountID = -1;
+    try {
+      accountID = Integer.parseInt((String) accountTable.getValueAt(accountTable.getSelectedRow(), 0));
+    } catch (ArrayIndexOutOfBoundsException e) {
+      JOptionPane.showMessageDialog(null, "Select accounts first.");
+    }
     String selectedCustomerpNr = customerList.getSelectedValue().toString().split(" ")[2];
     Customer customer = logic.matchCustomer(selectedCustomerpNr);
     Account account = customer.matchAccount(accountID);
@@ -840,6 +915,7 @@ public class GUImain extends JFrame implements ActionListener {
         if (logic.matchCustomer(customer.getCustomerpNr()) == null) {
           customerData = customer.getCustomerInfo();
           customerModel.addElement(customerData);
+          System.out.println(customerData);
           logic.addExistingCustomer(customersInFile.get(i));
         }
       }
@@ -863,7 +939,7 @@ public class GUImain extends JFrame implements ActionListener {
 
       if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
 
-        file = new FileOutputStream(fileChooser.getSelectedFile() + ".dat");
+        file = new FileOutputStream(fileChooser.getSelectedFile() + ".dat", true);
         BankOutFile = new ObjectOutputStream(file);
 
         for (int i = 0; i < customerList.getModel().getSize(); i++) {
