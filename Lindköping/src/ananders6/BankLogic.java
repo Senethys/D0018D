@@ -1,5 +1,6 @@
 package ananders6;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -8,9 +9,10 @@ import java.util.ArrayList;
  * @author Anna Andersson, ananders-6
  */
 
-public class BankLogic {
+public class BankLogic implements Serializable {
 
-  private ArrayList<Customer> CustomerList = new ArrayList<Customer>();
+  private static final long   serialVersionUID = 231L;
+  private ArrayList<Customer> CustomerList     = new ArrayList<Customer>();
 
   public BankLogic() {
   }
@@ -21,13 +23,13 @@ public class BankLogic {
    * @param Personnummer.
    * @return Customer object.
    */
-  private Customer matchCustomer(String pNr) {
+  public Customer matchCustomer(String pNr) {
 
     String matchedpNr;
     Customer MatchedCustomerObject = null;
 
     for (int i = 0; i < CustomerList.size(); i++) {
-      matchedpNr = CustomerList.get(i).getpNr();
+      matchedpNr = CustomerList.get(i).getCustomerpNr();
       {
         if (matchedpNr.equals(pNr)) {
           MatchedCustomerObject = CustomerList.get(i);
@@ -57,6 +59,17 @@ public class BankLogic {
   }
 
   /**
+   * Returnerar antalet kunder på banken. alla kunder.
+   * 
+   * @param void
+   * @return int
+   */
+  public int getAmountOfCustomers() {
+
+    return this.CustomerList.size();
+  }
+
+  /**
    * Skapar ett Customer objekt och lägger den i en ArrayList
    * 
    * @param String
@@ -71,12 +84,11 @@ public class BankLogic {
     if (CustomerList.size() != 0) {
       // Scan after matching pNr
       for (int i = 0; i < CustomerList.size(); i++) {
-        if (pNr.equals(CustomerList.get(i).getpNr())) {
+        if (pNr.equals(CustomerList.get(i).getCustomerpNr())) {
           exists = true;
           break;
         }
       }
-
       if (!exists) {
         Customer NewCustomer = new Customer(name, surname, pNr);
         CustomerList.add(NewCustomer);
@@ -85,6 +97,37 @@ public class BankLogic {
     } else {
       Customer NewCustomer = new Customer(name, surname, pNr);
       CustomerList.add(NewCustomer);
+      result = true;
+    }
+    return result;
+  }
+
+  /**
+   * Lägger till ett customer objekt till ArrayList. Denna metod används för
+   * serialisring.
+   * 
+   * @param Customer
+   * @return boolean
+   */
+  public boolean addExistingCustomer(Customer customer) {
+
+    boolean result = false;
+    boolean exists = false;
+    // If customers exists
+    if (CustomerList.size() != 0) {
+      // Scan after matching pNr
+      for (int i = 0; i < CustomerList.size(); i++) {
+        if (customer.getCustomerpNr().equals(CustomerList.get(i).getCustomerpNr())) {
+          exists = true;
+          break;
+        }
+      }
+      if (!exists) {
+        CustomerList.add(customer);
+        result = true;
+      }
+    } else {
+      CustomerList.add(customer);
       result = true;
     }
     return result;
@@ -139,7 +182,6 @@ public class BankLogic {
 
   }
 
-
   /**
    * Tar bort och alla dess konton från banken. Allt som togs bort returneras som
    * strängar i ArrayList.
@@ -188,8 +230,6 @@ public class BankLogic {
     }
     return accountNumber;
   }
-  
-  
 
   /**
    * Skapar ett unikt kreditkonto till kund med personnummer pNr. Returnerar -1 om
@@ -337,5 +377,17 @@ public class BankLogic {
       result = null;
     }
     return result;
+  }
+
+  public String getNameForPersonAt(int position) {
+    return (CustomerList.get(position)).getCustomerName();
+  }
+
+  public String getLastNameForPersonAt(int position) {
+    return (CustomerList.get(position)).getCustomerLastname();
+  }
+
+  public String getpNrAt(int position) {
+    return (CustomerList.get(position)).getCustomerpNr();
   }
 }

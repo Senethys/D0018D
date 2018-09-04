@@ -1,16 +1,19 @@
 package ananders6;
 
+import java.io.Serializable;
+
 /**
  * Denna klass tillhör en kund. Har sin egen ränta. Får inte bli mindre än 0.
  * 
  * @author Anna Andersson, ananders-6
  */
 
-public class SavingsAccount extends Account {
+public class SavingsAccount extends Account implements Serializable {
 
-  private String  type             = "Sparkonto";
-  private boolean usedFreeWithdraw = false;
-  private double  interestRate     = 1.0;
+  private static final long serialVersionUID = 41L;
+  private String            type             = "Sparkonto";
+  private boolean           usedFreeWithdraw = false;
+  private double            interestRate     = 1.0;
 
   public SavingsAccount() {
   }
@@ -98,7 +101,7 @@ public class SavingsAccount extends Account {
    * @param void
    * @return double
    */
- 
+
   @Override
   public double calculateInterest() {
     return (this.balance * this.interestRate / 100.0);

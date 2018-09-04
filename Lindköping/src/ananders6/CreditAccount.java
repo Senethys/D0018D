@@ -1,5 +1,7 @@
 package ananders6;
 
+import java.io.Serializable;
+
 /**
  * Denna klass tillhör en kund. Har sin egen ränta. Får inte bli mindre än
  * -5000;
@@ -7,11 +9,12 @@ package ananders6;
  * @author Anna Andersson, ananders-6
  */
 
-public class CreditAccount extends Account {
+public class CreditAccount extends Account implements Serializable {
 
-  private String type         = "Kreditkonto";
-  private double creditLimit  = -5000.0;
-  private double interestRate = 0.5;
+  private static final long serialVersionUID = 15L;
+  private String            type             = "Kreditkonto";
+  private double            creditLimit      = -5000.0;
+  private double            interestRate     = 0.5;
 
   public CreditAccount() {
   }
